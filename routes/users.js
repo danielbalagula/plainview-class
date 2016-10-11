@@ -3,23 +3,23 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.render('users', {});
 });
 
 router.get('/:user_id', function(req, res, next) {
-  res.send(req.params.user_id)
+  res.render('profile', {});
 });
 
 router.post('/', function(req, res, next) {
-  res.send('respond with a resource');
+  
 });
 
 router.put('/:user_id', function(req, res, next) {
-  res.send(req.params.user_id)
+  res.render('profile', {});
 });
 
 router.delete('/:user_id', function(req, res, next) {
-  res.send(req.params.user_id)
+  
 });
 
 module.exports = router;
