@@ -1,16 +1,23 @@
+var config = require('./config');
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var blocks = require('./routes/blocks');
+var discussions = require('./routes/discussions');
+var responses = require('./routes/responses');
 var tags = require('./routes/tags');
 
+var Response = require('./models/response');
+
 var app = express();
+mongoose.connect(config.database);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,7 +33,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/blocks', blocks);
+app.use('/discussions', discussions);
+app.use('/responses', responses);
 app.use('/tags', tags);
 
 app.get('/about', function(req, res, next){

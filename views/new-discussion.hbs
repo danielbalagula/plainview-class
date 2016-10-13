@@ -1,0 +1,74 @@
+<script src="/javascripts/jquery-validtion-1.15.0/dist/jquery.validate.js"></script>
+<script src="/javascripts/new-response.js"></script>
+
+<div class="container">
+  <form method="POST" action="/discussions" id="newDiscussionForm">
+    
+  <h2>Discussion</h2>
+    <div class="form-group row">
+    
+      <label for="discussionTitle" class="col-sm-2 col-form-label">Discussion title*</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="discussionTitle" name="discussionTitle" data-toggle="popover" data-trigger="focus" data-content="Posit a clear question that can be argued." placeholder="Question title">
+      </div>
+    </div>
+    
+    <div class="form-group row">
+      <label for="tagsTitle" class="col-sm-2 col-form-label">Tags*</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="tagsTitle" name="tags">
+	       <p id="tagsHelp" class="form-text text-muted">
+			Seperate tags by spaces.
+		  </p>
+      </div>
+    </div>
+
+     <h2>Initial argument</h2>
+
+     <div class="form-group row">
+     <label for="responseTitle" class="col-sm-2 col-form-label">Argument title*</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
+      </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="responseText" class="col-sm-2 col-form-label">Argument*</label>
+        <textarea class="form-control" id="responseText" name="responseText" rows="10"></textarea>
+      </div>
+
+    <fieldset class="form-group row">
+      <legend class="col-form-legend col-sm-2">Visibility</legend>
+      <div class="col-sm-10">
+        
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="visibility" id="public" value="public" checked>
+            Public
+          </label>
+	        <p id="publicHelp" class="form-text text-muted">
+			  Anyone will be able to see your argument and make comments, but only those you invite will be able to make official responses.
+			</p>
+        </div>
+
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" type="radio" name="visibility" id="private" value="private">
+            Private
+          </label>
+          <p id="publicHelp" class="form-text text-muted">
+			  Only you and the people you invite will be able to see, comment, and make official responses.
+		   </p>
+        </div>
+
+      </div>
+    </fieldset>
+    
+    <div class="form-group row">
+      <div class="offset-sm-2 col-sm-10">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+
+  </form>
+</div>
