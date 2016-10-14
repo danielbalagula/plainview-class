@@ -7,7 +7,11 @@ var Response = require('../models/response');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.render('discussions', {});
+  if (res.apiQuery){
+    res.json({})
+  } else {
+    res.render('discussions', {});
+  }
 });
 
 router.get('/new', function(req, res, next) {
@@ -21,7 +25,11 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
     Response.find({
       '_id': { $in: foundDiscussion.responses}
     }, function (err, foundResponses) { 
-      res.render('discussion', {discussion: foundDiscussion, responses: foundResponses}); 
+      if (req.apiQuery){
+        res.json({discussion: foundDiscussion, responses: foundResponses});
+      } else {
+        res.render('discussion', {discussion: foundDiscussion, responses: foundResponses}); 
+      }
     })
 	});
 });

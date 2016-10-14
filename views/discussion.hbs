@@ -1,6 +1,7 @@
 <script src="/javascripts/jquery-validtion-1.15.0/dist/jquery.validate.js"></script>
 <script src="/javascripts/new-response.js"></script>
 
+
 <div class="row">
 
 	<div class="col-md-2">	
@@ -12,7 +13,11 @@
 	      	{{#each responses}}
 		    	<div class="panel panel-default">
 			    	<div class="panel-heading">
-					 <h3 class="panel-title"><a href="/responses/{{this.title}}">{{this.title}}</a><span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span> </h3>
+					 <h3 class="panel-title">
+						 <span class="glyphicon glyphicon-pawn" style="color:red" aria-hidden="true"></span>
+						 <a href="/responses/{{this.title}}">{{this.title}}</a>
+						 <span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span> 
+					 </h3>
 					</div>
 					<div class="panel-body">
 						{{this.text}}
@@ -45,27 +50,39 @@
 
 	<div class="col-md-7">
 		
-		<div class="panel panel-default">
+		<div id="responsePanel" class="panel panel-default">
 	    	
 	    	<div class="panel-heading"><h3 class="panel-title">Submit a response</h3></div>
 			
 			<div class="panel-body">
-				<form method="POST" action="/responses">
+				<form id="responseForm" method="POST" action="/responses">
 					
 					<div class="form-group row">
 						<div class="col-md-1">	
 						</div>
+
 						<div class="col-md-11">	
-							<div class="btn-toolbar" role="group" aria-label="...">
-							  <button type="button" id="button" class="btn btn-info response-type">Subordinate</button>
-							  <button type="button" class="btn btn-primary response-type">Concur</button>
-							  <button type="button" class="btn btn-success response-type">Dissent</button>
-							  <button type="button" class="btn btn-warning response-type">Request for clarification</button>
-							  <button type="button" class="btn btn-danger response-type">Reject previous argument type</button>
-							  <button type="button" class="btn btn-default response-type">Request for factual substantiation</button>
-							</div>	
+							<div class="btn-toolbar" data-toggle="buttons">
+							  <label class="btn btn-info response-type">
+							    <input type="radio" name="responseType" value="subordinate" autocomplete="off"> Subordinate
+							  </label>
+							  <label class="btn btn-primary response-type">
+							    <input type="radio" name="responseType" value="dissent" autocomplete="off"> Dissent
+							  </label>
+							  <label class="btn btn-success response-type">
+							    <input type="radio" name="responseType" value="concur" autocomplete="off"> Concur
+							  </label>
+							  <label class="btn btn-warning response-type">
+							    <input type="radio" name="responseType" value="requestForClarification" autocomplete="off"> Request for clarification
+							  </label>
+							  <label class="btn btn-btn btn-danger response-type">
+							    <input type="radio" name="responseType" value="rejectPreviousArgumentType" autocomplete="off"> Reject previous argument type
+							  </label>
+							  <label class="btn btn-default response-type">
+							    <input type="radio" name="responseType" value="requestForFactualSubstantiation" autocomplete="off"> Request for factual substantiation
+							  </label>
+							</div>
 						</div>
-						
 					</div>
 
 					<div class="form-group row">

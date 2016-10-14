@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
+var api = require('./routes/api');
 var users = require('./routes/users');
 var discussions = require('./routes/discussions');
 var responses = require('./routes/responses');
@@ -32,10 +33,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/discussions', discussions);
-app.use('/responses', responses);
-app.use('/tags', tags);
+app.use('/api', api);
+app.use('(/api)?/users', users);
+app.use('(/api)?/discussions', discussions);
+app.use('(/api)?/responses', responses);
+app.use('(/api)?/tags', tags);
 
 app.get('/about', function(req, res, next){
   res.render('about', {});
