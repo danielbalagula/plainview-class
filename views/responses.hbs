@@ -1,1 +1,22 @@
-{{responses}}
+<div class="container">
+	<ol class="breadcrumb">
+	  <li><a href="/responses">Responses</a></li>
+	  <li><a href="/responses/{{title}}">{{title}}</a></li>
+	</ol>
+	<h2>{{title}}</h2>
+	<div class="row">
+	
+	{{#each responses}}
+	  <div class="col-sm-6 col-md-4">
+	    <div class="thumbnail">
+	      <div class="caption">
+	        <span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span>
+	        </br>
+	        <p>{{this.text}}</p>
+	      </div>
+	    </div>
+	  </div>
+	  {{/each}}
+
+	</div>
+</div>

@@ -3,33 +3,14 @@
 
 <div class="container">
   <form method="POST" action="/discussions" id="newDiscussionForm">
-    
-  <h2>Discussion</h2>
-    <div class="form-group row">
-    
-      <label for="discussionTitle" class="col-sm-2 col-form-label">Discussion title*</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="discussionTitle" name="discussionTitle" data-toggle="popover" data-trigger="focus" data-content="Posit a clear question that can be argued." placeholder="Question title">
-      </div>
-    </div>
-    
-    <div class="form-group row">
-      <label for="tagsTitle" class="col-sm-2 col-form-label">Tags*</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="tagsTitle" name="tags">
-	       <p id="tagsHelp" class="form-text text-muted">
-			Seperate tags by spaces.
-		  </p>
-      </div>
-    </div>
 
-     <h2>Initial argument</h2>
+     <h2>New argument</h2>
 
      <div class="form-group row">
      <label for="responseTitle" class="col-sm-2 col-form-label">Argument title*</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
-      </div>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
+        </div>
       </div>
 
       <div class="form-group row">
@@ -38,6 +19,17 @@
       </div>
 
     <fieldset class="form-group row">
+
+      <div class="form-group row">
+        <label for="tagsTitle" class="col-sm-2 col-form-label">Tags*</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="tagsTitle" name="tags">
+           <p id="tagsHelp" class="form-text text-muted">
+        Seperate tags by spaces.
+        </p>
+        </div>
+      </div>
+
       <legend class="col-form-legend col-sm-2">Visibility</legend>
       <div class="col-sm-10">
         

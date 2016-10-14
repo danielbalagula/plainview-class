@@ -1,59 +1,96 @@
-<div class="container">
-	
-	<div class="panel panel-primary">
-	  <div class="panel-heading">
-	    <h3 class="panel-title">{{discussion.title}}</h3>
-	  </div>
-	  <div class="panel-body">
+<script src="/javascripts/jquery-validtion-1.15.0/dist/jquery.validate.js"></script>
+<script src="/javascripts/new-response.js"></script>
 
-	    {{#each responses}}
-	    	<div class="panel panel-default">
-		    	<div class="panel-heading">
-				 <h3 class="panel-title"><a href="/responses/{{this.title}}">{{this.title}}</a><span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span> </h3>
-				</div>
-				<div class="panel-body">
-					{{this.text}}
-				</div>
-	    	</div>
-	    {{/each}}
-	  </div>
-	  <div class="panel-footer">Citation id: {{discussion.id}}</br>Created on: {{discussion.created_on}}</div>
+<div class="row">
+
+	<div class="col-md-2">	
 	</div>
+
+	  <div class="col-md-7">
+	    <div class="panel panel-primary">
+	      <div class="panel-body">
+	      	{{#each responses}}
+		    	<div class="panel panel-default">
+			    	<div class="panel-heading">
+					 <h3 class="panel-title"><a href="/responses/{{this.title}}">{{this.title}}</a><span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span> </h3>
+					</div>
+					<div class="panel-body">
+						{{this.text}}
+					</div>
+		    	</div>
+		    {{/each}}
+	      </div>
+	    </div>
+	  </div>
+	  
+	  <div class="col-md-2">
+	  	<div class="panel panel-default">
+	      <div class="panel-heading">Information</div>
+	      <div class="panel-body"><p style="font-size:13px">Created on: {{discussion.created_on}}</br>
+	      By: {{discussion.created_by}}</br>
+	      Tags: {{discussion.tags}}</br>
+	      Citation: {{discussion.id}}</br>
+	      </p>
+	      </div>
+	    </div>
+	  </div>
+
 
 </div>
 
-<div class="container">
-	
-	<div class="panel panel-default">
-    	
-    	<div class="panel-heading">
-		 <h3 class="panel-title">Submit a response<span class="pull-right"></h3>
-		</div>
-		
-		<div class="panel-body">
-			<form method="POST" action="/responses">
-				
-				<div class="form-group row">
-			     <label for="responseTitle" class="col-sm-2 col-form-label">Argument title*</label>
-			      <div class="col-sm-10">
-			        <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
-			      </div>
-		      	</div>
+<div class="row">
 
-		        <div class="form-group">
-			        <label for="responseText" class="col-sm-2 col-form-label">Response</label>
-			        <textarea class="form-control" id="responseText" name="responseText" rows="10"></textarea>
-		        </div>
-
-		        <div class="form-group">
-				    <div class="offset-sm-2 col-sm-10">
-				        <button type="submit" class="btn btn-primary">Submit</button>
-				    </div>
-			    </div>
-			    <input type="hidden" name="discussionId" value={{discussion.id}}>
-		    </form>
-	    </div>
-
+	<div class="col-md-2">	
 	</div>
 
+	<div class="col-md-7">
+		
+		<div class="panel panel-default">
+	    	
+	    	<div class="panel-heading"><h3 class="panel-title">Submit a response</h3></div>
+			
+			<div class="panel-body">
+				<form method="POST" action="/responses">
+					
+					<div class="form-group row">
+						<div class="col-md-1">	
+						</div>
+						<div class="col-md-11">	
+							<div class="btn-toolbar" role="group" aria-label="...">
+							  <button type="button" id="button" class="btn btn-info response-type">Subordinate</button>
+							  <button type="button" class="btn btn-primary response-type">Concur</button>
+							  <button type="button" class="btn btn-success response-type">Dissent</button>
+							  <button type="button" class="btn btn-warning response-type">Request for clarification</button>
+							  <button type="button" class="btn btn-danger response-type">Reject previous argument type</button>
+							  <button type="button" class="btn btn-default response-type">Request for factual substantiation</button>
+							</div>	
+						</div>
+						
+					</div>
+
+					<div class="form-group row">
+				     <label for="responseTitle" class="col-sm-2 col-form-label">Argument title*</label>
+				      <div class="col-sm-10">
+				        <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
+				      </div>
+			      	</div>
+
+			        <div class="form-group">
+				        <label for="responseText" class="col-sm-2 col-form-label">Response</label>
+				        <textarea class="form-control" id="responseText" name="responseText" rows="10"></textarea>
+			        </div>
+
+			        <div class="form-group">
+					    <div class="offset-sm-2 col-sm-10">
+					        <button type="submit" class="btn btn-primary">Submit</button>
+					    </div>
+				    </div>
+				    
+					<input type="hidden" name="discussionId" value={{discussion.id}}>
+			    
+			    </form>
+		    </div>
+
+			</div>
+		</div>
 </div>

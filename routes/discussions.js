@@ -26,19 +26,12 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
 	});
 });
 
-router.get('/:discussion_query', function(req, res, next) {
-  var discussion_query = req.params.discussion_query;
-	Discussion.findById(discussion_query, function (err, foundDiscussion) {
-	  res.render('discussions', {discussion: foundDiscussion});
-	});
-});
-
 router.post('/', function(req, res, next) {
   var newReponse = new Response({
     isLink: false,
     title: req.body.responseTitle,
     text: req.body.responseText,
-    createdBy: 'Daniel'
+    created_by: 'Daniel'
   });
 
   newReponse.save(function(err, savedResponse){
@@ -46,10 +39,13 @@ router.post('/', function(req, res, next) {
         title: req.body.discussionTitle,
         tags: req.body.tags,
         public: req.body.visibility == 'public',
-        createdBy: 'Daniel',
+        created_by: 'Daniel',
         responses: savedResponse.id
       });
       newDiscussion.save(function(err, savedDiscussion) {
+        savedResponse.update({
+          original_discussion: savedDiscussion.id
+        })
        res.redirect('/discussions/id/' + savedDiscussion.id);
       });
   });

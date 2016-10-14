@@ -1,1 +1,18 @@
-{{response}}
+<div class="container">
+	<ol class="breadcrumb">
+	  <li><a href="/responses">Responses</a></li>
+	  <li><a href="/responses/{{response.title}}">{{response.title}}</a></li>
+	  <li><a href="/responses/{{response.id}}">{{response.id}}</a></li>
+	</ol>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+		 <h3 class="panel-title"><a href="/responses/{{response.title}}">{{response.title}}</a><span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{response.id}}">{{response.id}}</a></i></font></span> </h3>
+		</div>
+		<div class="panel-body">
+			{{response.text}}
+		</div>
+		<div class="panel-footer">Created on: {{response.created_on}}
+		</br>Original use: <a href="/discussions/id/{{response.original_discussion}}">{{response.original_discussion}}</a>
+		</div>
+	</div>
+</div>

@@ -24,14 +24,14 @@ router.get('/id/:response_id([0-9a-f]{24})', function(req, res, next) {
 
 router.get('/:response_query', function(req, res, next) {
 	Response.find({title: req.params.response_query}, function (err, foundResponses) {
-	  res.render('responses', {responses: foundResponses});
+	  res.render('responses', {title: req.params.response_query, responses: foundResponses});
 	});
 });
 
 router.post('/', function(req, res, next) {
   var currentDiscussionId = req.body.discussionId;
   var newResponse = new Response({
-  	isLink: false,
+    original_discussion: currentDiscussionId,
   	title: req.body.responseTitle,
   	text: req.body.responseText,
   	public: req.body.visibility == 'public'
