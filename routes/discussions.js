@@ -28,7 +28,7 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
       if (req.apiQuery){
         res.json({discussion: foundDiscussion, responses: foundResponses});
       } else {
-        res.render('discussion', {discussion: foundDiscussion, responses: foundResponses}); 
+        res.render('discussion', {discussionId: discussionId}); 
       }
     })
 	});

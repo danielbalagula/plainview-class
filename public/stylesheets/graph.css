@@ -1,0 +1,16 @@
+body {
+  font: 300 14px 'Helvetica Neue', Helvetica;
+}
+
+.node rect {
+  stroke: #333;
+  fill: #fff;
+  max-width: 20px;
+  max-height: auto;
+}
+
+.edgePath path {
+  stroke: #333;
+  fill: #333;
+  stroke-width: 1.5px;
+}
