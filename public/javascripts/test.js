@@ -1,6 +1,9 @@
+
+
 $( document ).ready(function() {
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
 	$.get( "http://localhost:3000/api/discussions/id/" + currentDiscussionId, function( data ) {
+		
 		drawGraph(data);
 	});
 });
@@ -17,8 +20,13 @@ function drawGraph(data){
 	        'label': 'data(id)',
 		     'border-color': 'grey',
 		     'border-width': 1,
-		     'shape': 'rectangle',
-		     'text-valign': 'center',
+             'shape': 'polygon',
+             'text-border-width': 1,
+             'text-border-opacity': 1,
+             'text-border-style': 'solid',
+             'text-border-color': 'black',
+		     'shape-polygon-points': '1, 1',
+		     'text-halign': 'right',
 		     'text-wrap': 'wrap',
 		     'text-max-width': 500
 	      }
@@ -46,7 +54,7 @@ function drawGraph(data){
 
 	data.responses.forEach(function(response){
 		cy.add([
-	        {group: "nodes", data: {id: (response.title || "mislabeled") + "\n\n\n\n" + response.text }},
+	        {group: "nodes", data: {id: (response.title || "mislabeled") + "\n\n" + response.text }},
     	])
 		console.log(response)
 	})
