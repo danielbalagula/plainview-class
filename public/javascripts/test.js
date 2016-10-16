@@ -1,62 +1,48 @@
-
-
 $( document ).ready(function() {
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
-	$.get( "http://localhost:3000/api/discussions/id/" + currentDiscussionId, function( data ) {
-		
-		drawGraph(data);
-	});
+	drawGraph(currentDiscussionId);
 });
 
-function drawGraph(data){
+function drawGraph(currentDiscussionId){
 
-	var cy = cytoscape({
-	  container: $('#cy'),
+	var width = 960, height = 500;
 
-	  style: [ // the stylesheet for the graph
-	    {
-	      selector: 'node',
-	      style: {
-	        'label': 'data(id)',
-		     'border-color': 'grey',
-		     'border-width': 1,
-             'shape': 'polygon',
-             'text-border-width': 1,
-             'text-border-opacity': 1,
-             'text-border-style': 'solid',
-             'text-border-color': 'black',
-		     'shape-polygon-points': '1, 1',
-		     'text-halign': 'right',
-		     'text-wrap': 'wrap',
-		     'text-max-width': 500
-	      }
-	    },
+    d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(discussion){
 
-	    {
-	      selector: 'edge',
-	      style: {
-	        'width': 3,
-	        'line-color': '#ccc',
-	        'target-arrow-color': '#ccc',
-	        'target-arrow-shape': 'triangle'
-	      }
-	    }
-	  ],
+    	var data = [];
+    	var svg = d3.select("#debateExperience").attr("width", "100%").attr("height", "100%");
+    	var x = 20;
 
-	  layout: {
-	    name: 'grid',
-	    rows: 43
-	  },
+    	discussion.responses.forEach(function(response){
+    		
+			var responseNode = svg.append("foreignObject").attr("x", 50).attr("y", 15).attr("width", 200).attr("id", "n"+response._id).attr("stroke", "black");
+			var responseText =  responseNode.append("xhtml:div").attr("style", "id:t" + response._id + "; width:190px; height:auto; overflow-y:auto").text(response.text);
+			var textHeight = responseNode[0][0].childNodes[0].clientHeight;
+			responseNode.attr("height", textHeight + 10)
+			svg.append("rect").attr("x",responseNode.attr("x")-10).attr("y",responseNode.attr("y")-10).attr("width",200).attr("height", textHeight+15).attr("fill","none").attr("stroke", "black")
+			// console.log($("#t" + response._id));
+			// console.log($("n"+response._id).css("height"))
 
-	});
+    		data.push({"overflow-y": "auto","id": response._id , "fill": "white", "x": x, "width":80, "height":80, "label": response.text});
+    		x += 100;
+    	});
+    	
 
-	cy.nodes().ungrabify()
+   //  	var elem = svg.selectAll("g myCircleText")
+   //      	.data(data)
 
-	data.responses.forEach(function(response){
-		cy.add([
-	        {group: "nodes", data: {id: (response.title || "mislabeled") + "\n\n" + response.text }},
-    	])
-		console.log(response)
-	})
+   //      var elemEnter = elem.enter()
+		 //    .append("g")
+		 //    .attr("transform", function(d){return "translate("+d.x+",80)"})
+
+		 // var rectangle = elemEnter.append("rect")
+		 //    .attr("height", function(d){return d.height} )
+		 //    .attr("width", function(d){return d.width} )
+		 //    .attr("fill", function(d){return d.fill} )
+		 //    .attr("id",function(d){return d.id})
+		 //    .attr("stroke","black")
+		
+    });
 
 }
+
