@@ -1,5 +1,7 @@
-body {
-  font: 300 14px 'Helvetica Neue', Helvetica;
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Arial, sans-serf;
+  font-size: 14px;
 }
 
 .node rect {

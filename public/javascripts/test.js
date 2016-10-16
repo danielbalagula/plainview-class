@@ -5,8 +5,6 @@ $( document ).ready(function() {
 
 function drawGraph(currentDiscussionId){
 
-	var width = 960, height = 500;
-
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(discussion){
 
     	// var data = [];
@@ -18,12 +16,25 @@ function drawGraph(currentDiscussionId){
 
     	discussion.responses.forEach(function(response){
 
-    		g.setNode("1",  { label: response.text});
+    		g.setNode("1",  { label: wordwrap(response.text + response.text + response.text + response.text + response.text + response.text + response.text + response.text)});
     		g.setNode("2",  { label: response.text});
     		g.setNode(3,  { label: response.text});
     		g.setNode(4,  { label: response.text});
 
     	});
+
+    	function wordwrap( str, width, brk, cut ) {
+		    brk = brk || '\n';
+		    width = width || 75;
+		    cut = cut || false;
+
+		    if (!str) { return str; }
+
+		   var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
+
+		     return str.match( RegExp(regex, 'g') ).join( brk );
+		}
+
     	g.setEdge("1", "2");
 
     	g.nodes().forEach(function(v) {
