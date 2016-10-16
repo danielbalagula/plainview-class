@@ -1,10 +1,4 @@
-textarea {
-	resize: none;
-}
 
-svg {
-	word-wrap: break-word;
-}
 
 #graphContainer {
 	max-width: 50%;
@@ -19,4 +13,16 @@ svg {
     position: absolute;
     top: 0px;
     left: 0px;
+}
+
+.node {
+  white-space: nowrap;
+}
+
+.node rect,
+.node circle,
+.node ellipse {
+  stroke: #333;
+  fill: #fff;
+  stroke-width: 1.5px;
 }
