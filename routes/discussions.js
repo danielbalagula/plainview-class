@@ -26,6 +26,7 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
       '_id': { $in: foundDiscussion.responses}
     }, function (err, foundResponses) { 
       if (req.apiQuery){
+        console.log(foundDiscussion);
         res.json({discussion: foundDiscussion, responses: foundResponses});
       } else {
         res.render('discussion', {discussionId: discussionId}); 
@@ -43,13 +44,17 @@ router.post('/', function(req, res, next) {
   });
 
   newReponse.save(function(err, savedResponse){
+      var relationship = {}
+      relationship[savedResponse.id.toString()] = {relatedResponse: "", relationshipType: "root"};
       var newDiscussion = new Discussion({
         title: req.body.discussionTitle,
         tags: req.body.tags,
         public: req.body.visibility == 'public',
         created_by: 'Daniel',
-        responses: savedResponse.id
+        responses: savedResponse.id,
+        relationships: [relationship]
       });
+      console.log([relationship]);
       newDiscussion.save(function(err, savedDiscussion) {
         savedResponse.update({
           original_discussion: savedDiscussion.id

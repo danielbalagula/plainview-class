@@ -7,5 +7,9 @@ module.exports = mongoose.model('Discussion', new Schema({
 	created_on: { type: Date, default: Date.now },
 	public: Boolean,
 	responses: [Schema.Types.Object],
-	relationships: [{ relatedResponse: Schema.Types.Object, relationshipType: String}]
+	relationships: [Schema.Types.Object]
 }));
+
+// ['first': {'', 'root'}]
+
+//['second': {'first', 'concur'}]

@@ -2,6 +2,12 @@ text {
   font-weight: 300;
   font-family: "Helvetica Neue", Arial, sans-serf;
   font-size: 14px;
+  -moz-user-select: text;
+}
+
+.d {
+	fill: red;
+	-moz-user-select: all;
 }
 
 .node rect {
