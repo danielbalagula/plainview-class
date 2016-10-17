@@ -1,3 +1,8 @@
+.citation {
+  font-size: 12px;
+  font-style: italic;
+}
+
 .selected-node {
   fill: red;
 }

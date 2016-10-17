@@ -3,9 +3,47 @@ $( document ).ready(function() {
 	drawGraph(currentDiscussionId);
 });
 
+var localData;
+var currentResponse;
+
+function submitResponse(){
+	$.ajax({
+	  type: "POST",
+	  url: "http://localhost:3000/responses",
+	  data: data,
+	  success: success,
+	  dataType: dataType
+	});
+	alert(currentResponse);
+}
+
 function drawGraph(currentDiscussionId){
 
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
+
+    	var localData = data;
+
+		function findResponseById(id){
+			for (index in data.responses){
+				if ("n"+data.responses[index]._id === id) { return data.responses[index] };
+			}
+		}
+
+    	function setCurrentResponse(responseId){
+    		var response;
+    		if (responseId) { 
+    			response = findResponseById(responseId); 
+    		} else { 
+    			response = data.responses[0]; 
+    		}
+    		currentResponse = response;
+			$('#infoPanelHeading').text(response.title);
+	    	$('#currentResponseText').text(response.text);
+	    	$('#responseId').text(response._id);
+	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+response._id);
+    	}
+
+    	setCurrentResponse();
 
     	var mouseMovement;
 
@@ -21,19 +59,27 @@ function drawGraph(currentDiscussionId){
     		discussion.relationships.forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
     				g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node " + relationship[response._id]["relationshipType"]});
-    				console.log("n"+response._id);
     			}
     		})
     	});
 
     	g.nodes().forEach(function(v) {
 		  var node = g.node(v);
-		  node.rx = node.ry = 20;
+		  node.rx = node.ry = 7;
 		});
 
 		var svg = d3.select("svg"),
 			inner = svg.select("g");
 			svgGroup = svg.append("g");
+
+		var borderPath = svg.append("rect")
+   			.attr("x", 0)
+   			.attr("y", 0)
+   			.attr("height", "800px")
+   			.attr("width", "100%")
+   			.style("stroke", "#89bdd3")
+   			.style("fill", "none")
+   			.style("stroke-width", 2);
 
 		var zoom = d3.behavior.zoom().on("zoom", function() {
 		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
@@ -46,7 +92,10 @@ function drawGraph(currentDiscussionId){
 		render(d3.select("svg g"), g);
 
 		svg.selectAll(".node").on('mousedown', function(){
-			mouseMovement = false;
+			if (mouseMovement){
+				textSelected = true;
+				mouseMovement = false;
+			}
 			d3.event.stopPropagation();
 		})
 
@@ -62,6 +111,7 @@ function drawGraph(currentDiscussionId){
 				argumentsToRespondTo.push(id);
 				svg.select("#"+id).classed("selected-node", true);
 				svg.select("#"+id).classed("unselected-node", false);
+				setCurrentResponse(id);
 			} else {
 				argumentsToRespondTo.splice(index, 1);
 				svg.select("#"+id).classed("selected-node", false);
