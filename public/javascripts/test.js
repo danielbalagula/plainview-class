@@ -7,6 +7,8 @@ function drawGraph(currentDiscussionId){
 
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
 
+    	var mouseMovement;
+
     	var discussion = data.discussion;
     	var responses = data.responses;
     	var argumentsToRespondTo = [];
@@ -18,7 +20,7 @@ function drawGraph(currentDiscussionId){
     	responses.forEach(function(response){
     		discussion.relationships.forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
-    				g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: relationship[response._id]["relationshipType"]});
+    				g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node " + relationship[response._id]["relationshipType"]});
     				console.log("n"+response._id);
     			}
     		})
@@ -34,9 +36,8 @@ function drawGraph(currentDiscussionId){
 			svgGroup = svg.append("g");
 
 		var zoom = d3.behavior.zoom().on("zoom", function() {
-
 		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
-		                                  "scale(" + d3.event.scale + ")")
+		            "scale(" + d3.event.scale + ")")
 		    });
 		svg.call(zoom);
 
@@ -44,40 +45,34 @@ function drawGraph(currentDiscussionId){
 
 		render(d3.select("svg g"), g);
 
+		svg.selectAll(".node").on('mousedown', function(){
+			mouseMovement = false;
+			d3.event.stopPropagation();
+		})
+
+		svg.selectAll(".node").on('mousemove', function(){
+			mouseMovement = true;
+		})
+
 		svg.selectAll(".node").on("click", function(id) {
+			if (d3.event.defaultPrevented) return;
 			var index = argumentsToRespondTo.indexOf(id);
+			if (mouseMovement) return; 
 			if (index === -1){
 				argumentsToRespondTo.push(id);
-				svg.select("#"+id).attr('fill', 'red');
+				svg.select("#"+id).classed("selected-node", true);
+				svg.select("#"+id).classed("unselected-node", false);
 			} else {
 				argumentsToRespondTo.splice(index, 1);
-				svg.select("#"+id).attr('fill', 'blue');
+				svg.select("#"+id).classed("selected-node", false);
+				svg.select("#"+id).classed("unselected-node", true);
 			}
 		});
-
-
-		console.log(d3.select('#test').on(".zoom", console.log("312")));
 
 		// var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
 		// svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
 		
     });
-
- //    $(function(){
- //    $.extend($.fn.disableTextSelect = function() {
- //        return this.each(function(){
- //            if($.browser.mozilla){//Firefox
- //                $(this).css('MozUserSelect','text');
- //            }else if($.browser.msie){//IE
- //                $(this).bind('selectstart',function(){return true;});
- //            }else{//Opera, etc.
- //                $(this).mousedown(function(){return true;});
- //            }
- //        });
- //    });
-	//     $('.noSelect').disableTextSelect();//No text selection on elements with a class of 'noSelect'
-	// });
-
 }
 
 function wordwrap( str, width, brk, cut ) {
