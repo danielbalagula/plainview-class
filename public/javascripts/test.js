@@ -1,21 +1,30 @@
-$( document ).ready(function() {
-	var currentDiscussionId = $( ".discussionId" ).attr('id');
-	drawGraph(currentDiscussionId);
-});
-
+var currentDiscussionId;
 var localData;
 var currentResponse;
 
-function submitResponse(){
-	$.ajax({
-	  type: "POST",
-	  url: "http://localhost:3000/responses",
-	  data: data,
-	  success: success,
-	  dataType: dataType
+$( document ).ready(function() {
+	currentDiscussionId = $( ".discussionId" ).attr('id');
+	drawGraph(currentDiscussionId);
+	$('#responseForm').submit(function(event){
+		event.preventDefault();
+		var newResponse = {
+			discussionId: currentDiscussionId,
+			 responseTitle: $("#newResponseTitle").val(),
+			 responseText: $('#newResponseText').val(),
+			 relatedResponse: currentResponse._id,
+			 relationshipType: $("input:radio[name ='responseType']:checked").val()
+			}
+		console.log(newResponse);
+		$.ajax({
+			type: "POST",
+			url: "/responses",
+			data: JSON.stringify(newResponse),
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: location.reload()
+		});
 	});
-	alert(currentResponse);
-}
+});
 
 function drawGraph(currentDiscussionId){
 
@@ -37,10 +46,10 @@ function drawGraph(currentDiscussionId){
     			response = data.responses[0]; 
     		}
     		currentResponse = response;
-			$('#infoPanelHeading').text(response.title);
-	    	$('#currentResponseText').text(response.text);
-	    	$('#responseId').text(response._id);
-	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+response._id);
+			$('#infoPanelHeading').text(currentResponse.title);
+	    	$('#currentResponseText').text(currentResponse.text);
+	    	$('#responseId').text(currentResponse._id);
+	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+currentResponse._id);
     	}
 
     	setCurrentResponse();
@@ -56,9 +65,10 @@ function drawGraph(currentDiscussionId){
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
+    		console.log(response);
+    		g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
     		discussion.relationships.forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
-    				g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node " + relationship[response._id]["relationshipType"]});
     			}
     		})
     	});
@@ -109,6 +119,7 @@ function drawGraph(currentDiscussionId){
 			if (mouseMovement) return; 
 			if (index === -1){
 				argumentsToRespondTo.push(id);
+				svg.select(".selected-node").classed("selected-node", false);
 				svg.select("#"+id).classed("selected-node", true);
 				svg.select("#"+id).classed("unselected-node", false);
 				setCurrentResponse(id);

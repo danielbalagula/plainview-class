@@ -5,6 +5,31 @@ var mongoose = require('mongoose');
 var Discussion = require('../models/discussion');
 var Response = require('../models/response');
 
+router.post('/', function(req, res, next) {
+  console.log(req.body);
+  var currentDiscussionId = req.body.discussionId;
+  var newResponse = new Response({
+    original_discussion: currentDiscussionId,
+    title: req.body.responseTitle,
+    text: req.body.responseText,
+    public: req.body.visibility == 'public'
+  });
+  newResponse.save(function(err, savedResponse){
+    var relationship = {}
+    relationship[savedResponse.id.toString()] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.responseType};
+    Discussion.findByIdAndUpdate(currentDiscussionId,
+      {$push: {"responses": savedResponse.id }},
+      {safe: true, upsert: true},
+      function (err, foundDiscussion) {
+        if (req.apiQuery){
+          res.redirect('api/discussions/id/' + currentDiscussionId);
+        } else {
+          res.redirect('discussions/id/' + currentDiscussionId);
+        }
+      });
+    });
+});
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   if (res.apiQuery){
@@ -38,29 +63,6 @@ router.get('/:response_query', function(req, res, next) {
       res.render('responses', {title: req.params.response_query, responses: foundResponses});
     }
 	});
-});
-
-router.post('/', function(req, res, next) {
-  var currentDiscussionId = req.body.discussionId;
-  var newResponse = new Response({
-    original_discussion: currentDiscussionId,
-  	title: req.body.responseTitle,
-  	text: req.body.responseText,
-  	public: req.body.visibility == 'public'
-  });
- 
-  newResponse.save(function(err, savedResponse){
-    Discussion.findByIdAndUpdate(currentDiscussionId,
-      {$push: {"responses": savedResponse.id }},
-      {safe: true, upsert: true},
-      function (err, foundDiscussion) {
-        if (req.apiQuery){
-          res.redirect('api/discussions/id/' + currentDiscussionId);
-        } else {
-          res.redirect('discussions/id/' + currentDiscussionId);
-        }
-      });
-    });
 });
 
 router.put('/id/:response_id', function(req, res, next) {
