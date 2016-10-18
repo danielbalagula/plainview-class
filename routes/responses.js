@@ -18,7 +18,7 @@ router.post('/', function(req, res, next) {
     var relationship = {}
     relationship[savedResponse.id.toString()] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.responseType};
     Discussion.findByIdAndUpdate(currentDiscussionId,
-      {$push: {"responses": savedResponse.id }},
+      {$push: {"responses": savedResponse.id, "relationships": relationship }},
       {safe: true, upsert: true},
       function (err, foundDiscussion) {
         if (req.apiQuery){

@@ -2,7 +2,7 @@
 
 <script src="/javascripts/d3.v3.min.js"></script>
 <script src="/javascripts/dagre-d3.js"></script>
-<script src="/javascripts/test.js"></script>
+<script src="/javascripts/interface.js"></script>
 
 <div class="row">
 
@@ -16,10 +16,12 @@
 		<div id="infoPanel" class="panel panel-default">
 			<div class="panel-heading">
 				<span id="infoPanelHeading" class="panel-title"></span>
-				<a href="" id="responseUrl"><span id="responseId" class="citation pull-right"></span></a>
 			</div>
 			<div class="panel-body" id="infoPanelBody">
 				<div id="currentResponseText"></div>
+			</div>
+			<div class="panel-footer">
+				<span class="citation">Citation number: </span><a href="" id="responseUrl"><span id="responseId" class="citation"></span></a>
 			</div>
 		</div>
 		<div id="responsePanel" class="panel panel-default">

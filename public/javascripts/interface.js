@@ -14,7 +14,6 @@ $( document ).ready(function() {
 			 relatedResponse: currentResponse._id,
 			 relationshipType: $("input:radio[name ='responseType']:checked").val()
 			}
-		console.log(newResponse);
 		$.ajax({
 			type: "POST",
 			url: "/responses",
@@ -65,10 +64,11 @@ function drawGraph(currentDiscussionId){
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
-    		console.log(response);
     		g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
-    		discussion.relationships.forEach(function(relationship){
+    		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
+    			console.log(relationship);
     			if (relationship.hasOwnProperty(response._id)){
+    				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id);
     			}
     		})
     	});
@@ -96,6 +96,8 @@ function drawGraph(currentDiscussionId){
 		            "scale(" + d3.event.scale + ")")
 		    });
 		svg.call(zoom);
+
+		d3.select("svg").on("dblclick.zoom", null);
 
 		var render = new dagreD3.render();
 
