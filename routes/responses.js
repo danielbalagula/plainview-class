@@ -24,7 +24,7 @@ router.post('/', function(req, res, next) {
         if (req.apiQuery){
           res.redirect('api/discussions/id/' + currentDiscussionId);
         } else {
-          res.redirect('discussions/id/' + currentDiscussionId);
+          res.send(savedResponse.id.toString());
         }
       });
     });

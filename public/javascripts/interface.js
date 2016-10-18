@@ -1,6 +1,7 @@
 var currentDiscussionId;
 var localData;
 var currentResponse;
+var g;
 
 $( document ).ready(function() {
 	currentDiscussionId = $( ".discussionId" ).attr('id');
@@ -14,16 +15,19 @@ $( document ).ready(function() {
 			 relatedResponse: currentResponse._id,
 			 relationshipType: $("input:radio[name ='responseType']:checked").val()
 			}
-		$.ajax({
+		addNodeToGraph($.ajax({
 			type: "POST",
 			url: "/responses",
 			data: JSON.stringify(newResponse),
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",
-			success: location.reload()
-		});
+		}), newResponse);
 	});
 });
+
+function addNodeToGraph(nodeId, newResponse){
+	g.setNode("n"+nodeId, { id: "n"+nodeId, label: newResponse.responseTitle + "\n" + wordwrap(newResponse.responseText), class: "unselected-node "})	
+}
 
 function drawGraph(currentDiscussionId){
 
@@ -59,14 +63,14 @@ function drawGraph(currentDiscussionId){
     	var responses = data.responses;
     	var argumentsToRespondTo = [];
 
-		var g = new dagreD3.graphlib.Graph()
+		g = new dagreD3.graphlib.Graph()
 		  .setGraph({})
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
     		g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
-    			console.log(relationship);
+
     			if (relationship.hasOwnProperty(response._id)){
     				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id);
     			}
