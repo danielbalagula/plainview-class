@@ -22,11 +22,15 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - make buttons for response types look better
 - style selected/unselected nodes better
 - implement max/min zoom
+- implement tags (possibly?)
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code
 - Know the limitations of the libraries you find before you use them
 - Reflect upon all design decisions
 
-##Random:
+##Questions:
 - How would having a slightly grey background look on the graph?
+- Should we implement tags?
+- What font do we want arguments to use?
+- What restrictions will we place on user input? (word length, characters, allowable words, etc.)
