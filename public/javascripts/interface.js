@@ -1,6 +1,7 @@
 var currentDiscussionId;
 var localData;
 var currentResponse;
+var highlighted = false;
 var g;
 
 $( document ).ready(function() {
@@ -59,6 +60,9 @@ function drawGraph(currentDiscussionId){
 
     	var mouseMovement;
 
+    	var highlighted = false;
+    	var nodeClicked = false;
+
     	var discussion = data.discussion;
     	var responses = data.responses;
     	var argumentsToRespondTo = [];
@@ -113,16 +117,25 @@ function drawGraph(currentDiscussionId){
 				mouseMovement = false;
 			}
 			d3.event.stopPropagation();
+			nodeClicked = true;
 		})
 
 		svg.selectAll(".node").on('mousemove', function(){
 			mouseMovement = true;
+			console.log(nodeClicked);
+			if (nodeClicked === true){
+				highlighted = true;
+			}
 		})
 
 		svg.selectAll(".node").on("click", function(id) {
-			if (d3.event.defaultPrevented) return;
 			var index = argumentsToRespondTo.indexOf(id);
 			if (mouseMovement) return; 
+			if (highlighted === true){
+				nodeClicked = false;
+				highlighted = false;
+				return;
+			}
 			if (index === -1){
 				argumentsToRespondTo.push(id);
 				svg.select(".selected-node").classed("selected-node", false);

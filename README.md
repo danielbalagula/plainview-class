@@ -3,7 +3,7 @@ WikiThinks
 Operated by: Jordan Coimbra, Daniel Balagula
 
 ##Current Bugs:
-- deselecting highlighted text selects a response node (it shouldn't)
+- ~~deselecting highlighted text selects a response node (it shouldn't)~~ (10/19/2016)
 - page doesn't immediately add node to graph when user makes a response (it should)
 - long words don't wrap around response node (they should)
 - typeahead.js suggestion dropdown doesn't show (it should)
