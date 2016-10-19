@@ -3,19 +3,39 @@ var localData;
 var currentResponse;
 var highlighted = false;
 var g;
+var responseFormat = "text";
 
 $( document ).ready(function() {
+	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
+	
 	drawGraph(currentDiscussionId);
+
+	$('#testButton').click(function(e){
+		console.log(responseFormat);
+	})
+	
 	$('#responseForm').submit(function(event){
 		event.preventDefault();
-		var newResponse = {
-			discussionId: currentDiscussionId,
-			 responseTitle: $("#newResponseTitle").val(),
-			 responseText: $('#newResponseText').val(),
-			 relatedResponse: currentResponse._id,
-			 relationshipType: $("input:radio[name ='responseType']:checked").val()
+		if (responseFormat === "text"){
+			var newResponse = {
+				discussionId: currentDiscussionId,
+				citation: false,
+				responseTitle: $("#newResponseTitle").val(),
+				responseText: $('#newResponseText').val(),
+				relatedResponse: currentResponse._id,
+				relationshipType: $("input:radio[name ='responseType']:checked").val()
 			}
+		} else if (responseFormat === "link"){
+			var newResponse = {
+				discussionId: currentDiscussionId,
+				citation: true,
+				citationId: $("#linkCitationId").val(),
+				relatedResponse: currentResponse._id,
+				relationshipType: $("input:radio[name ='responseType']:checked").val()
+			}
+		}
+
 		addNodeToGraph($.ajax({
 			type: "POST",
 			url: "/responses",
@@ -24,6 +44,15 @@ $( document ).ready(function() {
 			dataType: "json",
 		}), newResponse);
 	});
+
+	$("#formatTabs").on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+	    if (e.target.hash === "#linkTab"){
+	    	responseFormat = "link";
+	    } else if (e.target.hash === "#textTab"){
+			responseFormat = "text";
+	    }
+	})
+
 });
 
 function addNodeToGraph(nodeId, newResponse){
@@ -35,6 +64,16 @@ function drawGraph(currentDiscussionId){
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
 
     	var localData = data;
+
+    	var mouseMovement;
+
+    	var highlighted = false;
+    	var nodeClicked = false;
+
+    	var discussion = data.discussion;
+    	var responses = data.responses;
+    	var argumentsToRespondTo = [];
+
 
 		function findResponseById(id){
 			for (index in data.responses){
@@ -58,15 +97,6 @@ function drawGraph(currentDiscussionId){
 
     	setCurrentResponse();
 
-    	var mouseMovement;
-
-    	var highlighted = false;
-    	var nodeClicked = false;
-
-    	var discussion = data.discussion;
-    	var responses = data.responses;
-    	var argumentsToRespondTo = [];
-
 		g = new dagreD3.graphlib.Graph()
 		  .setGraph({})
 		  .setDefaultEdgeLabel(function() { return {}; });
@@ -76,14 +106,17 @@ function drawGraph(currentDiscussionId){
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 
     			if (relationship.hasOwnProperty(response._id)){
-    				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id);
+    				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
+    					arrowhead: 'undirected',
+    					// lineInterpolate: 'basis'
+    				});
     			}
     		})
     	});
 
     	g.nodes().forEach(function(v) {
 		  var node = g.node(v);
-		  node.rx = node.ry = 7;
+		  node.rx = node.ry = 5;
 		});
 
 		var svg = d3.select("svg"),
@@ -122,7 +155,6 @@ function drawGraph(currentDiscussionId){
 
 		svg.selectAll(".node").on('mousemove', function(){
 			mouseMovement = true;
-			console.log(nodeClicked);
 			if (nodeClicked === true){
 				highlighted = true;
 			}

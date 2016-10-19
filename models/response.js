@@ -6,5 +6,7 @@ module.exports = mongoose.model('Block', new Schema({
 	title: String,
 	text: String,
 	created_by: String,
-	created_on: { type: Date, default: Date.now }
+	created_on: { type: Date, default: Date.now },
+	citation: Boolean,
+	citationId: Schema.Types.ObjectId,
 }));

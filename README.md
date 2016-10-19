@@ -3,10 +3,12 @@ WikiThinks
 Operated by: Jordan Coimbra, Daniel Balagula
 
 ##Current Bugs:
-- ~~deselecting highlighted text selects a response node (it shouldn't)~~ (10/19/2016)
+- ~~deselecting highlighted text selects a response node (it shouldn't)~~ Fixed 10/19/2016
 - page doesn't immediately add node to graph when user makes a response (it should)
 - long words don't wrap around response node (they should)
 - typeahead.js suggestion dropdown doesn't show (it should)
+- mouse selecting nodes is not as fluid as it could be
+- labels for form info overflow when screen is tight (they shouldn't)
 
 ##To Do:
 - link a citation instead of writing an argument as a response
@@ -34,3 +36,4 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - Should we implement tags?
 - What font do we want arguments to use?
 - What restrictions will we place on user input? (word length, characters, allowable words, etc.)
+- Do we want edges to be curved or rigid? Rigid

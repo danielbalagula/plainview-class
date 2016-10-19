@@ -6,19 +6,35 @@ var Discussion = require('../models/discussion');
 var Response = require('../models/response');
 
 router.post('/', function(req, res, next) {
-  console.log(req.body);
   var currentDiscussionId = req.body.discussionId;
-  var newResponse = new Response({
-    original_discussion: currentDiscussionId,
-    title: req.body.responseTitle,
-    text: req.body.responseText,
-    public: req.body.visibility == 'public'
-  });
+  var newResponse;
+  if (req.body.citation === "text"){
+    newResponse = new Response({
+        original_discussion: currentDiscussionId,
+        title: req.body.responseTitle,
+        text: req.body.responseText,
+        citation: false
+      })
+  } else if (req.body.citation === "link"){
+    newResponse = new Response({
+        original_discussion: currentDiscussionId,
+        citation: true,
+        citationId: req.body.citationId
+      })
+  }
+  console.log('321');
   newResponse.save(function(err, savedResponse){
-    var relationship = {}
+    var relationship = {};
     relationship[savedResponse.id.toString()] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.responseType};
+    var idForDebateExperience;
+    if (req.body.citation === false){
+      idForDebateExperience = savedResponse.id;
+    } else if (req.body.citation === true) {
+      idForDebateExperience = savedResponse.citationId;
+    }
+    console.log('123');
     Discussion.findByIdAndUpdate(currentDiscussionId,
-      {$push: {"responses": savedResponse.id, "relationships": relationship }},
+      {$push: {"responses": idForDebateExperience, "relationships": relationship }},
       {safe: true, upsert: true},
       function (err, foundDiscussion) {
         if (req.apiQuery){
@@ -30,7 +46,6 @@ router.post('/', function(req, res, next) {
     });
 });
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
   if (res.apiQuery){
     res.json({});
