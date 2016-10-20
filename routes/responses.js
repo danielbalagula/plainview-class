@@ -16,7 +16,8 @@ router.post('/', function(req, res, next) {
     });
   newResponse.save(function(err, savedResponse){
     var relationship = {}
-    relationship[savedResponse.id] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.responseType};
+    relationship[savedResponse.id] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
+    console.log(relationship);
     Discussion.findByIdAndUpdate(currentDiscussionId,
       {$push: {"responses": savedResponse.id, "relationships": relationship }},
       {safe: true, upsert: true},
@@ -56,6 +57,7 @@ router.get('/id/:response_id([0-9a-f]{24})', function(req, res, next) {
 
 router.get('/:response_query', function(req, res, next) {
 	Response.find({title: req.params.response_query}, function (err, foundResponses) {
+    console.log(foundResponses);
 	  if (req.apiQuery){
       res.json({responses: foundResponses});
     } else {

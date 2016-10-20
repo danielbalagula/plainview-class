@@ -9,14 +9,15 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - typeahead.js suggestion dropdown doesn't show (it should)
 - mouse selecting nodes is not as fluid as it could be
 - labels for form info overflow when screen is tight (they shouldn't)
+- edge styles have grey at the ends (they shouldn't)
 
 ##To Do:
-- link a citation instead of writing an argument as a response
+- ~~link a citation instead of writing an argument as a response~~ Compelted 10/19/2016
 - implement article data type
 - accept JSON request from client
 - add comments to debate experiences and arguments
 - text highlighting and quoting
-- style edges between response nodes based on response type
+- ~~style edges between response nodes based on response type~~ Completed 10/20/2016
 - implement better argument title suggestion algorithm/api
 - editing previous arguments and keeping a version history of arguments
 - implement search box
@@ -25,6 +26,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - style selected/unselected nodes better
 - implement max/min zoom
 - implement tags (possibly?)
+- add a meta data structure in db that holds things like arguments that cite, etc.
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

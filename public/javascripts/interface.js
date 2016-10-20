@@ -80,6 +80,15 @@ function drawGraph(currentDiscussionId){
     	var responses = data.responses;
     	var argumentsToRespondTo = [];
 
+    	var strokeTypes = {
+    		'subordinate': '#4286f4',
+    		'concur' : '#7af442',
+    		'dissnet' : '#1d00ff',
+    		'requestForClarification' : '#d8d147',
+    		'rejectPreviousArgumentType' : '#ef0000',
+    		'requestForFactualSubstantiation' : '#848484'
+    	}
+
 
 		function findResponseById(id){
 			for (index in data.responses){
@@ -109,14 +118,14 @@ function drawGraph(currentDiscussionId){
 
     	responses.forEach(function(response){
     		if (discussion.citations.indexOf(response._id) !== -1){
-    			console.log('123');
-    			g.setNode("n"+response._id, { id: "n"+response._id, label: "(Citation) " + response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
+    			g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node citationResponse"});
     		} else {
     			g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
     				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
+    					style: "stroke: " + strokeTypes[relationship[response._id]["relationshipType"]] + "; fill: none;",
     					arrowhead: 'undirected',
     					// lineInterpolate: 'basis'
     				});
