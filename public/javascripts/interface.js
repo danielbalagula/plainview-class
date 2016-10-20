@@ -26,6 +26,13 @@ $( document ).ready(function() {
 				relatedResponse: currentResponse._id,
 				relationshipType: $("input:radio[name ='responseType']:checked").val()
 			}
+			addNodeToGraph($.ajax({
+				type: "POST",
+				url: "/responses",
+				data: JSON.stringify(newResponse),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+			}), newResponse);
 		} else if (responseFormat === "link"){
 			var newResponse = {
 				discussionId: currentDiscussionId,
@@ -34,15 +41,14 @@ $( document ).ready(function() {
 				relatedResponse: currentResponse._id,
 				relationshipType: $("input:radio[name ='responseType']:checked").val()
 			}
+			addNodeToGraph($.ajax({
+				type: "POST",
+				url: "/discussions/addCitationToDiscussion",
+				data: JSON.stringify(newResponse),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+			}), newResponse);
 		}
-
-		addNodeToGraph($.ajax({
-			type: "POST",
-			url: "/responses",
-			data: JSON.stringify(newResponse),
-			contentType: "application/json; charset=utf-8",
-			dataType: "json",
-		}), newResponse);
 	});
 
 	$("#formatTabs").on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
@@ -102,9 +108,13 @@ function drawGraph(currentDiscussionId){
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
-    		g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
+    		if (discussion.citations.indexOf(response._id) !== -1){
+    			console.log('123');
+    			g.setNode("n"+response._id, { id: "n"+response._id, label: "(Citation) " + response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
+    		} else {
+    			g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
+    		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
-
     			if (relationship.hasOwnProperty(response._id)){
     				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
     					arrowhead: 'undirected',

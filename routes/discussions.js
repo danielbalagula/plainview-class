@@ -25,7 +25,6 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
       '_id': { $in: foundDiscussion.responses}
     }, function (err, foundResponses) { 
       if (req.apiQuery){
-        console.log(foundDiscussion);
         res.json({discussion: foundDiscussion, responses: foundResponses});
       } else {
         res.render('discussion', {discussionId: discussionId}); 
@@ -50,10 +49,9 @@ router.post('/', function(req, res, next) {
         tags: req.body.tags,
         public: req.body.visibility == 'public',
         created_by: 'Daniel',
-        responses: savedResponse.id,
+        responses: [savedResponse.id],
         relationships: [relationship]
       });
-      console.log([relationship]);
       newDiscussion.save(function(err, savedDiscussion) {
         savedResponse.update({
           original_discussion: savedDiscussion.id
@@ -62,6 +60,18 @@ router.post('/', function(req, res, next) {
       });
   });
 });
+
+router.post('/addCitationToDiscussion', function(req, res, next){
+  console.log(req.body);
+  var relationship = {}
+  relationship[req.body.citationId] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
+  Discussion.findByIdAndUpdate(req.body.discussionId,
+    {$push: {"responses": req.body.citationId, "relationships": relationship, "citations": req.body.citationId}},
+    {safe: true, upsert: true},
+    function (err, foundDiscussion) {
+        res.redirect('/discussions/id/' + req.body.discussionId);
+    });
+})
 
 router.put('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
   res.render('discussion', {});
