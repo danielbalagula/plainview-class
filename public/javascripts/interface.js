@@ -6,10 +6,9 @@ var g;
 var responseFormat = "text";
 
 var responseTempalte = `
-<div class="responseNode">
-	<h3><%= title %></h3>
-	<p><%= text %></p>
-</div>`
+	<h3 class="responseTitle"><%= title %></h3>
+	<p class="responseText"><%= text %></p>
+`
 
 var compiled = _.template(responseTempalte);
 
@@ -150,7 +149,8 @@ function drawGraph(currentDiscussionId){
     		if (discussion.citations.indexOf(response._id) !== -1){
     			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
     		} else {
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled(response), class: "unselected-node citationResponse"});
+    			response.text = response.text.replace(/(.{80})/g, "$1<br>")
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({title: response.title, text: response.text}), class: "unselected-node citationResponse"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
@@ -237,8 +237,8 @@ function drawGraph(currentDiscussionId){
 }
 
 function wordwrap( str, width, brk, cut ) {
-    brk = brk || '\n';
-    width = width || 75;
+    brk = brk || '5<br>';
+    width = width || 20;
     cut = cut || false;
 
     if (!str) { return str; }

@@ -1,8 +1,7 @@
-div {
+/*div {
   font-family: 'Slabo 27px', serif;
   font-size: 18px;
-
-}
+}*/
 
 .citation {
   font-size: 12px;
@@ -15,7 +14,7 @@ div {
 
 .unselected-node {
   fill: black;
-  font-family: 'Slabo 27px', serif;
+  font-family: 'Roboto Slab', serif;
 }
 
 .selected-node {
@@ -29,8 +28,18 @@ div {
    text-overflow: ellipsis;
 }
 
-.responseNode {
+.responseText {
   color: black;
+  align-content: space-between;
+  max-width: 400px;
+  text-align: left;
+  line-height: 150%;
+
+}
+
+.responseTitle {
+  color: black;
+  font-weight: bold;
 }
 
 #graphContainer {
