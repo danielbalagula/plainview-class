@@ -6,8 +6,11 @@ var g;
 var responseFormat = "text";
 
 var responseTempalte = `
-	<h3 class="responseTitle"><a href="../../responses/<%= title %>""><%= title %></a></h3>
-	<p class="responseText"><%= text %></p>
+	<div class="<%= templateData.class %>">
+		<span> <%= templateData.response.created_by %>  </span>
+		<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
+		<p class="templateData.response.responseText"><%= templateData.response.text %></p>
+	</div>
 `
 
 var compiled = _.template(responseTempalte);
@@ -146,11 +149,12 @@ function drawGraph(currentDiscussionId){
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
+    		console.log(response)
     		if (discussion.citations.indexOf(response._id) !== -1){
-    			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "citationResponse"}}), class: "unselected-node citationResponse"});
     		} else {
     			response.text = response.text.replace(/(.{80})/g, "$1<br>")
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({title: response.title, text: response.text}), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "originalResponse"}}), class: "unselected-node"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
