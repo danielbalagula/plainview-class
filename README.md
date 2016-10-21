@@ -10,6 +10,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - mouse selecting nodes is not as fluid as it could be
 - labels for form info overflow when screen is tight (they shouldn't)
 - edge styles have grey at the ends (they shouldn't)
+- lines wrap and break in-between words (they shouldn't)
 
 ##To Do:
 - ~~link a citation instead of writing an argument as a response~~ Compelted 10/19/2016

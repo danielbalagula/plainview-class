@@ -6,7 +6,7 @@ var g;
 var responseFormat = "text";
 
 var responseTempalte = `
-	<h3 class="responseTitle"><%= title %></h3>
+	<h3 class="responseTitle"><a href="../../responses/<%= title %>""><%= title %></a></h3>
 	<p class="responseText"><%= text %></p>
 `
 
@@ -134,7 +134,7 @@ function drawGraph(currentDiscussionId){
     			currentResponse = data.responses[0]; 
     		}
 			$('#infoPanelHeading').text(currentResponse.title);
-	    	$('#currentResponseText').text(currentResponse.text);
+	    	$('#currentResponseText').text(currentResponse.text.replace(/<br>/g, ''));
 	    	$('#responseId').text(currentResponse._id);
 	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+currentResponse._id);
     	}
