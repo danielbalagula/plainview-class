@@ -68,9 +68,14 @@ $( document ).ready(function() {
 		  }
 	});
 
-	$('#suggestedTitles .typeahead').typeahead(null, {
+	$('#suggestedTitles .typeahead').typeahead({
+	  hint: true,
+	  highlight: true,
+	  minLength: 1
+	}, {
 	  name: 'matchedTitles',
-	  source: matchedTitles
+	  source: matchedTitles,
+	  highlight: true
 	});
 
 	var source   = $("#entry-template").html();
@@ -153,7 +158,7 @@ function drawGraph(currentDiscussionId){
 
     	g.nodes().forEach(function(v) {
 		  var node = g.node(v);
-		  node.rx = node.ry = 5;
+		  node.rx = node.ry = 1;
 		});
 
 		var svg = d3.select("svg"),
@@ -165,7 +170,7 @@ function drawGraph(currentDiscussionId){
    			.attr("y", 0)
    			.attr("height", "800px")
    			.attr("width", "100%")
-   			.style("stroke", "#89bdd3")
+   			.style("stroke", "#D3D3D3")
    			.style("fill", "none")
    			.style("stroke-width", 2);
 
@@ -234,4 +239,3 @@ function wordwrap( str, width, brk, cut ) {
     var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
      return str.match( RegExp(regex, 'g') ).join( brk );
 }
-

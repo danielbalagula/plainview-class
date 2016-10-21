@@ -1,3 +1,9 @@
+div {
+  font-family: 'Slabo 27px', serif;
+  font-size: 18px;
+
+}
+
 .citation {
   font-size: 12px;
   font-style: italic;
@@ -7,13 +13,22 @@
   fill: blue;
 }
 
+.unselected-node {
+  fill: black;
+  font-family: 'Slabo 27px', serif;
+}
+
 .selected-node {
   fill: red;
 }
 
-.unselected-node {
-  fill: black;
+.responseSampleThumbnail {
+   width: 90%;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
+
 
 #graphContainer {
 	max-width: 50%;
@@ -39,7 +54,7 @@
 .node ellipse {
   stroke: #333;
   fill: #fff;
-  stroke-width: 1.5px;
+  stroke-width: 0.66px;
 }
 
 .tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
@@ -62,6 +77,10 @@
     color: #999;
 }
 
+.tt-suggestion:hover { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
+    background-color: #efefef;
+    cursor: pointer;
+}
 .tt-menu { /* UPDATE: newer versions use tt-menu instead of tt-dropdown-menu */
     width: 422px;
     margin-top: 12px;
@@ -69,20 +88,14 @@
     background-color: #fff;
     border: 1px solid #ccc;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    border-radius: 2px;
+    /*box-shadow: 0 5px 10px rgba(0,0,0,.2);*/
 }
 
 .tt-suggestion {
     padding: 3px 20px;
     font-size: 18px;
     line-height: 24px;
-}
-
-.tt-suggestion.tt-is-under-cursor { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
-    color: #fff;
-    background-color: #0097cf;
-
 }
 
 .tt-suggestion p {

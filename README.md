@@ -4,7 +4,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 
 ##Current Bugs:
 - ~~deselecting highlighted text selects a response node (it shouldn't)~~ Fixed 10/19/2016
-- page doesn't immediately add node to graph when user makes a response (it should)
+- ~~page doesn't immediately add node to graph when user makes a response (it should)~~ Fixed 10/20/2016
 - long words don't wrap around response node (they should)
 - typeahead.js suggestion dropdown doesn't show (it should)
 - mouse selecting nodes is not as fluid as it could be
@@ -27,6 +27,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - implement max/min zoom
 - implement tags (possibly?)
 - add a meta data structure in db that holds things like arguments that cite, etc.
+- Look into potential usability of: http://cpettitt.github.io/project/dagre-d3/latest/demo/clusters.html
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code
