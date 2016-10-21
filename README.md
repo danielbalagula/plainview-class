@@ -28,6 +28,9 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - implement tags (possibly?)
 - add a meta data structure in db that holds things like arguments that cite, etc.
 - Look into potential usability of: http://cpettitt.github.io/project/dagre-d3/latest/demo/clusters.html
+- Get Handlebars to work on server and client sides instead of using two different templating engines
+- Implement Require.js: http://requirejs.org/docs/start.html
+- Figure out best place to put resposneTemplate
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

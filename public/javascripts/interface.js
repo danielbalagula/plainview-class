@@ -5,6 +5,14 @@ var highlighted = false;
 var g;
 var responseFormat = "text";
 
+var responseTempalte = `
+<div class="responseNode">
+	<h3><%= title %></h3>
+	<p><%= text %></p>
+</div>`
+
+var compiled = _.template(responseTempalte);
+
 $( document ).ready(function() {
 	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
@@ -78,12 +86,11 @@ $( document ).ready(function() {
 	  highlight: true
 	});
 
-	var source   = $("#entry-template").html();
-	var template = Handlebars.compile(source);
-	var context = {title: "My New Post", body: "This is my first post!"};
-	var html    = template(context);
-	console.log(html);
-
+	// var source   = $("#entry-template").html();
+	// var template = Handlebars.compile(source);
+	// var context = {title: "My New Post", body: "This is my first post!"};
+	// var html    = template(context);
+	// console.log(html);
 });
 
 function addNodeToGraph(nodeId, newResponse){
@@ -143,7 +150,7 @@ function drawGraph(currentDiscussionId){
     		if (discussion.citations.indexOf(response._id) !== -1){
     			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
     		} else {
-    			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled(response), class: "unselected-node citationResponse"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){

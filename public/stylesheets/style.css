@@ -29,6 +29,9 @@ div {
    text-overflow: ellipsis;
 }
 
+.responseNode {
+  color: black;
+}
 
 #graphContainer {
 	max-width: 50%;
