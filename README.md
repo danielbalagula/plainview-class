@@ -39,3 +39,4 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - What font do we want arguments to use?
 - What restrictions will we place on user input? (word length, characters, allowable words, etc.)
 - Do we want edges to be curved or rigid? Rigid
+- Do we want a seperate data structure for argument titles? What is the performance difference?

@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 var Discussion = require('../models/discussion');
 var Response = require('../models/response');
+var responseTitle = require('../models/responseTitle');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -59,6 +60,14 @@ router.post('/', function(req, res, next) {
        res.redirect('/discussions/id/' + savedDiscussion.id);
       });
   });
+  responseTitle.find({title: req.body.responseTitle}, function(err, foundResponse, num){
+    if (foundResponse.length === 0){
+      var newResponseTitle = new responseTitle({
+        title: req.body.responseTitle
+      });
+      newResponseTitle.save(function(err, savedResponse){})
+    }
+  })
 });
 
 router.post('/addCitationToDiscussion', function(req, res, next){

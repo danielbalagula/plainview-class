@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 var Discussion = require('../models/discussion');
 var Response = require('../models/response');
+var responseTitle = require('../models/responseTitle');
 
 router.post('/', function(req, res, next) {
   var currentDiscussionId = req.body.discussionId;
@@ -29,6 +30,14 @@ router.post('/', function(req, res, next) {
         }
       });
     });
+  responseTitle.find({title: req.body.responseTitle}, function(err, foundResponse, num){
+    if (foundResponse.length === 0){
+      var newResponseTitle = new responseTitle({
+        title: req.body.responseTitle
+      });
+      newResponseTitle.save(function(err, savedResponse){})
+    }
+  })
 });
 
 router.get('/', function(req, res, next) {
@@ -65,6 +74,17 @@ router.get('/:response_query', function(req, res, next) {
     }
 	});
 });
+
+router.get('/responseTitles/:response_query', function(req, res, next){
+  responseTitle.find({ title : { "$regex": req.params.response_query, "$options": "i" } }, function(err, foundTitles){
+    var titles = [];
+    foundTitles.forEach(function(title){
+      titles.push(title.title);
+    })
+    console.log(titles);
+    res.send(titles);
+  })
+})
 
 router.put('/id/:response_id', function(req, res, next) {
   res.render('response', {});

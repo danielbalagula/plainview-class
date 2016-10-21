@@ -59,6 +59,26 @@ $( document ).ready(function() {
 	    }
 	})
 
+	var matchedTitles = new Bloodhound({
+	  	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+	  	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  	remote: {
+		    url: '../../responses/responseTitles/%QUERY',
+		    wildcard: '%QUERY'
+		  }
+	});
+
+	$('#suggestedTitles .typeahead').typeahead(null, {
+	  name: 'matchedTitles',
+	  source: matchedTitles
+	});
+
+	var source   = $("#entry-template").html();
+	var template = Handlebars.compile(source);
+	var context = {title: "My New Post", body: "This is my first post!"};
+	var html    = template(context);
+	console.log(html);
+
 });
 
 function addNodeToGraph(nodeId, newResponse){
@@ -97,13 +117,11 @@ function drawGraph(currentDiscussionId){
 		}
 
     	function setCurrentResponse(responseId){
-    		var response;
     		if (responseId) { 
-    			response = findResponseById(responseId); 
+    			currentResponse = findResponseById(responseId); 
     		} else { 
-    			response = data.responses[0]; 
+    			currentResponse = data.responses[0]; 
     		}
-    		currentResponse = response;
 			$('#infoPanelHeading').text(currentResponse.title);
 	    	$('#currentResponseText').text(currentResponse.text);
 	    	$('#responseId').text(currentResponse._id);
@@ -118,9 +136,9 @@ function drawGraph(currentDiscussionId){
 
     	responses.forEach(function(response){
     		if (discussion.citations.indexOf(response._id) !== -1){
-    			g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
     		} else {
-    			g.setNode("n"+response._id, { id: "n"+response._id, label: response.title + "\n" + wordwrap(response.text), class: "unselected-node "});
+    			g.setNode("n"+response._id, { id: "n"+response._id, label: wordwrap(response.text), class: "unselected-node citationResponse"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
