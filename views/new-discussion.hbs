@@ -9,7 +9,9 @@
      <div class="form-group row">
      <label for="responseTitle" class="col-sm-2 col-form-label">Argument title*</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="responseTitle" name="responseTitle">
+          <div id="suggestedTitles">
+            <input class="typeahead form-control" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
+          </div>
         </div>
       </div>
 

@@ -4,12 +4,12 @@ Operated by: Jordan Coimbra, Daniel Balagula
 
 ##Current Bugs:
 - ~~deselecting highlighted text selects a response node (it shouldn't)~~ Fixed 10/19/2016
-- ~~page doesn't immediately add node to graph when user makes a response (it should)~~ Fixed 10/20/2016
-- long words don't wrap around response node (they should)
-- typeahead.js suggestion dropdown doesn't show (it should)
+- page doesn't immediately add node to graph when user makes a response (it should)
+- ~~long words don't wrap around response node (they should)~~ Fixed 10/21/2016
+- ~~typeahead.js suggestion dropdown doesn't show (it should)~~ Fixed 10/20/2016
 - mouse selecting nodes is not as fluid as it could be
 - labels for form info overflow when screen is tight (they shouldn't)
-- edge styles have grey at the ends (they shouldn't)
+- ~~edge styles have grey at the ends (they shouldn't)~~ Altered: edge styles don't represent response relationships
 - lines wrap and break in-between words (they shouldn't)
 
 ##To Do:
@@ -32,6 +32,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - Get Handlebars to work on server and client sides instead of using two different templating engines
 - Implement Require.js: http://requirejs.org/docs/start.html
 - Figure out best place to put resposneTemplate
+- A better way to getting relationship types when drawing nodes
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

@@ -6,25 +6,27 @@ var g;
 var responseFormat = "text";
 
 var responseTempalte = `
-	<div class="<%= templateData.class %>">
-		<span> <%= templateData.response.created_by %>  </span>
-		<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
-		<p class="templateData.response.responseText"><%= templateData.response.text %></p>
+	<div>
+		<div class="<%= templateData.class %>">
+			<span class ="control glyphicon glyphicon-pawn" style="color:<%= templateData.responseTypeColor %>"></span>
+			<span> <%= templateData.response.created_by %></span>
+			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
+			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
+			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
+		</div>
 	</div>
 `
 
 var compiled = _.template(responseTempalte);
 
 $( document ).ready(function() {
+
+	startBloodhound();
 	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
 	
 	drawGraph(currentDiscussionId);
 
-	$('#testButton').click(function(e){
-		console.log(responseFormat);
-	})
-	
 	$('#responseForm').submit(function(event){
 		event.preventDefault();
 		if (responseFormat === "text"){
@@ -69,25 +71,6 @@ $( document ).ready(function() {
 	    }
 	})
 
-	var matchedTitles = new Bloodhound({
-	  	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-	  	queryTokenizer: Bloodhound.tokenizers.whitespace,
-	  	remote: {
-		    url: '../../responses/responseTitles/%QUERY',
-		    wildcard: '%QUERY'
-		  }
-	});
-
-	$('#suggestedTitles .typeahead').typeahead({
-	  hint: true,
-	  highlight: true,
-	  minLength: 1
-	}, {
-	  name: 'matchedTitles',
-	  source: matchedTitles,
-	  highlight: true
-	});
-
 	// var source   = $("#entry-template").html();
 	// var template = Handlebars.compile(source);
 	// var context = {title: "My New Post", body: "This is my first post!"};
@@ -109,12 +92,13 @@ function drawGraph(currentDiscussionId){
 
     	var highlighted = false;
     	var nodeClicked = false;
+    	var replyClicked = false;
 
     	var discussion = data.discussion;
     	var responses = data.responses;
     	var argumentsToRespondTo = [];
 
-    	var strokeTypes = {
+    	var responseColors = {
     		'subordinate': '#4286f4',
     		'concur' : '#7af442',
     		'dissnet' : '#1d00ff',
@@ -149,17 +133,17 @@ function drawGraph(currentDiscussionId){
 		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
-    		console.log(response)
+    		var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
     		if (discussion.citations.indexOf(response._id) !== -1){
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "citationResponse"}}), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
     		} else {
     			response.text = response.text.replace(/(.{80})/g, "$1<br>")
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "originalResponse"}}), class: "unselected-node"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
     				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
-    					style: "stroke: " + strokeTypes[relationship[response._id]["relationshipType"]] + "; fill: none;",
+    					style: "fill: none;",
     					arrowhead: 'undirected',
     					// lineInterpolate: 'basis'
     				});
@@ -197,13 +181,16 @@ function drawGraph(currentDiscussionId){
 
 		render(d3.select("svg g"), g);
 
-		svg.selectAll(".node").on('mousedown', function(){
+		svg.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
 				textSelected = true;
 				mouseMovement = false;
 			}
 			d3.event.stopPropagation();
 			nodeClicked = true;
+			if (replyClicked === true){
+			 	console.log(inner)
+			}
 		})
 
 		svg.selectAll(".node").on('mousemove', function(){
@@ -233,6 +220,19 @@ function drawGraph(currentDiscussionId){
 				svg.select("#"+id).classed("unselected-node", true);
 			}
 		});
+
+		$('.reply-button').on('mousedown', function(e){
+			replyClicked = true;
+		})		
+
+		$('.reply-button').on('mouseup', function(e){
+			replyClicked = false;
+		})
+
+		$('.testButton').click(function(e){
+			console.log(nc);
+		})
+
 
 		// var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
 		// svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");

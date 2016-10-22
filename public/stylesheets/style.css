@@ -8,8 +8,16 @@
   font-style: italic;
 }
 
+.control.glyphicon {
+  position: static;
+}
+
 .citationResponse {
   fill: blue;
+}
+
+.reply-button {
+  font-family: sans-serif;
 }
 
 .unselected-node {
@@ -19,6 +27,7 @@
 
 .selected-node {
   fill: red;
+  font-family: 'Roboto Slab', serif;
 }
 
 .responseSampleThumbnail {
@@ -34,7 +43,8 @@
   max-width: 400px;
   text-align: left;
   line-height: 150%;
-
+  fill: black;
+  
 }
 
 .citationResponse {
@@ -49,6 +59,7 @@
 .responseTitle {
   color: black;
   font-weight: bold;
+
 }
 
 #graphContainer {

@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    startBloodhound();
+
     $('#newDiscussionForm').validate({ // initialize the plugin
         rules: {
             discussionTitle: {
