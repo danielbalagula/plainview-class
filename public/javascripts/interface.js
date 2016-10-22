@@ -208,12 +208,11 @@ function drawGraph(currentDiscussionId){
 
 		render(d3.select("svg g"), g);
 
-		var zoom = d3.behavior.zoom().on("zoom", function() {
+		var svg = d3.select("svg"),
+	    	inner = d3.select("svg g"),
+	    	zoom = d3.behavior.zoom().on("zoom", function() {
 		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
-		            "scale(" + d3.event.scale + ")");
-		      currentZoomScale = d3.event.scale;
-        	  currentPosition = d3.event.translate;
-
+		                                  "scale(" + d3.event.scale + ")");
 		    });
 		svg.call(zoom);
 
@@ -228,18 +227,18 @@ function drawGraph(currentDiscussionId){
 				console.log(currentZoomScale, currentPosition);
 				g.node(id).label += "<div>" + inputTemplate + "</div>";
 
-				var zoom = d3.behavior.zoom()
-					.scale(currentZoomScale)
-					.on("zoom", function() {
-			    		inner.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
-			    	});
-				svg.call(zoom);
+				// var zoom = d3.behavior.zoom()
+				// 	.scale(currentZoomScale)
+				// 	.on("zoom", function() {
+			 //    		inner.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
+			 //    	});
+				// svg.call(zoom);
 
-				d3.select("svg").on("dblclick.zoom", null);
-				inner.attr("transform", "translate(" + currentPosition + ")" +
-		            "scale(" + currentZoomScale + ")");
+				// d3.select("svg").on("dblclick.zoom", null);
+				// inner.attr("transform", "translate(" + currentPosition + ")" +
+		  //           "scale(" + currentZoomScale + ")");
 
-				//render(d3.select("svg g"), g);
+				render(d3.select("svg g"), g);
 
 
 			 	replyClicked = false;

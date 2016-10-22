@@ -42,6 +42,7 @@
 .originalResponse {
   color: black;
   align-content: space-between;
+  width: 400px;
   max-width: 400px;
   text-align: left;
   line-height: 150%;
