@@ -7,6 +7,9 @@ var responseFormat = "text";
 var mouseX = 0;
 var mouseY = 0;
 
+var currentZoomScale;
+var currentPosition;
+
 var responseTempalte = `
 	<div>
 		<div class="<%= templateData.class %>">
@@ -197,17 +200,22 @@ function drawGraph(currentDiscussionId){
    			.style("fill", "none")
    			.style("stroke-width", 2);
 
-		var zoom = d3.behavior.zoom().on("zoom", function() {
-		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
-		            "scale(" + d3.event.scale + ")")
-		    });
-		svg.call(zoom);
+		
 
 		d3.select("svg").on("dblclick.zoom", null);
 
 		var render = new dagreD3.render();
 
 		render(d3.select("svg g"), g);
+
+		var zoom = d3.behavior.zoom().on("zoom", function() {
+		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
+		            "scale(" + d3.event.scale + ")");
+		      currentZoomScale = d3.event.scale;
+        	  currentPosition = d3.event.translate;
+
+		    });
+		svg.call(zoom);
 
 		inner.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
@@ -217,17 +225,23 @@ function drawGraph(currentDiscussionId){
 			d3.event.stopPropagation();
 			nodeClicked = true;
 			if (replyClicked === true){
-				g.node(id, "test");
-				g.node(id).label += inputTemplate;
+				console.log(currentZoomScale, currentPosition);
+				g.node(id).label += "<div>" + inputTemplate + "</div>";
 
-				// var zoom = d3.behavior.zoom().on("zoom", function() {
-			 //      inner.attr("transform", "translate(" + d3.event.translate + ")" +
-			 //            "scale(" + d3.event.scale + ")")
-			 //    });
-				// svg.call(zoom);
+				var zoom = d3.behavior.zoom()
+					.scale(currentZoomScale)
+					.on("zoom", function() {
+			    		inner.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
+			    	});
+				svg.call(zoom);
 
-				// d3.select("svg").on("dblclick.zoom", null);
-				render(d3.select("svg g"), g);
+				d3.select("svg").on("dblclick.zoom", null);
+				inner.attr("transform", "translate(" + currentPosition + ")" +
+		            "scale(" + currentZoomScale + ")");
+
+				//render(d3.select("svg g"), g);
+
+
 			 	replyClicked = false;
 			}
 		})

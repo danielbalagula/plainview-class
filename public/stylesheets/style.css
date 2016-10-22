@@ -23,11 +23,13 @@
 .unselected-node {
   fill: black;
   font-family: 'Roboto Slab', serif;
+  font-size: 12px;
 }
 
 .selected-node {
-  fill: red;
+  fill: black;
   font-family: 'Roboto Slab', serif;
+  font-size: 12px;
 }
 
 .responseSampleThumbnail {
