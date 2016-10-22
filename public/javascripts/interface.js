@@ -4,6 +4,8 @@ var currentResponse;
 var highlighted = false;
 var g;
 var responseFormat = "text";
+var mouseX = 0;
+var mouseY = 0;
 
 var responseTempalte = `
 	<div>
@@ -12,14 +14,40 @@ var responseTempalte = `
 			<span> <%= templateData.response.created_by %></span>
 			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
 			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
-			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
+			<button type="button" class="btn btn-link btn-sm reply-button" data-toggle="modal" data-target="#3responseModal">Reply</button>
 		</div>
 	</div>
 `
 
+var inputTemplate = `
+	<div class="inputTemplate">
+		<hr style="border: none; height:1px; background-color: black ">
+		<form id="responseForm">
+			<div id="newResponseTitle" class="form-group row">
+				<div id="suggestedTitles">
+					Response title:
+					<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
+					<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#responseModal">Browse</button>
+				</div>
+			</div>
+			<div class="form-group row">
+				<textarea rows="10" style="width:90%; border:solid .33px gray; resize: none;"></textarea>
+			</div>
+			<div class="form-group row">
+				<button type="button" class="btn btn-sm reply-button">Submit</button>
+			</div>
+		</form>
+	</div>
+	`
+
 var compiled = _.template(responseTempalte);
 
 $( document ).ready(function() {
+
+	$( document ).on( "mousemove", function( event ) {
+		mouseY = event.pageY;
+		mouseX = event.pageX;
+	});
 
 	startBloodhound();
 	
@@ -181,7 +209,7 @@ function drawGraph(currentDiscussionId){
 
 		render(d3.select("svg g"), g);
 
-		svg.selectAll(".node").on('mousedown', function(id){
+		inner.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
 				textSelected = true;
 				mouseMovement = false;
@@ -189,7 +217,18 @@ function drawGraph(currentDiscussionId){
 			d3.event.stopPropagation();
 			nodeClicked = true;
 			if (replyClicked === true){
-			 	console.log(inner)
+				g.node(id, "test");
+				g.node(id).label += inputTemplate;
+
+				// var zoom = d3.behavior.zoom().on("zoom", function() {
+			 //      inner.attr("transform", "translate(" + d3.event.translate + ")" +
+			 //            "scale(" + d3.event.scale + ")")
+			 //    });
+				// svg.call(zoom);
+
+				// d3.select("svg").on("dblclick.zoom", null);
+				render(d3.select("svg g"), g);
+			 	replyClicked = false;
 			}
 		})
 

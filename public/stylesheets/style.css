@@ -47,6 +47,11 @@
   
 }
 
+.inputTemplate {
+  color: black;
+  width: 100%;
+}
+
 .citationResponse {
   color: blue;
   align-content: space-between;
