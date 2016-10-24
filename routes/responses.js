@@ -43,11 +43,14 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-  if (res.apiQuery){
-    res.json({});
-  } else {
-    res.render('responses', {});
-  }
+  req.body.filters = req.body.filters || {};
+  Response.find(req.body.filters, function(err, foundResponses){
+    if (res.apiQuery){
+      res.json(foundResponses);
+    } else {
+      res.render('responses', {responses: foundResponses});
+    }
+  })
 });
 
 router.get('/new', function(req, res, next) {

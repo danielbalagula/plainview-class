@@ -35,28 +35,29 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-  var newReponse = new Response({
+  var newResponse = new Response({
     isLink: false,
     title: req.body.responseTitle,
     text: req.body.responseText,
     created_by: 'Daniel'
   });
 
-  newReponse.save(function(err, savedResponse){
-      var relationship = {}
-      relationship[savedResponse.id.toString()] = {relatedResponse: "", relationshipType: "root"};
-      var newDiscussion = new Discussion({
-        title: req.body.discussionTitle,
-        tags: req.body.tags,
-        public: req.body.visibility == 'public',
-        created_by: 'Daniel',
-        responses: [savedResponse.id],
-        relationships: [relationship]
-      });
+  var relationship = {}
+  relationship[newResponse._id.toString()] = {relatedResponse: "", relationshipType: "root"};
+
+  var newDiscussion = new Discussion({
+    title: req.body.discussionTitle,
+    tags: req.body.tags,
+    public: req.body.visibility == 'public',
+    created_by: 'Daniel',
+    responses: [newResponse._id],
+    relationships: [relationship]
+  });
+
+  newResponse.original_discussion = newDiscussion._id;
+
+  newResponse.save(function(err, savedResponse){
       newDiscussion.save(function(err, savedDiscussion) {
-        savedResponse.update({
-          original_discussion: savedDiscussion.id
-        })
        res.redirect('/discussions/id/' + savedDiscussion.id);
       });
   });

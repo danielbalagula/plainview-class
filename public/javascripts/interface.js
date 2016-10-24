@@ -2,10 +2,7 @@ var currentDiscussionId;
 var localData;
 var currentResponse;
 var highlighted = false;
-var g;
 var responseFormat = "text";
-var mouseX = 0;
-var mouseY = 0;
 
 var currentZoomScale;
 var currentPosition;
@@ -14,10 +11,11 @@ var responseTempalte = `
 	<div>
 		<div class="<%= templateData.class %>">
 			<span class ="control glyphicon glyphicon-pawn" style="color:<%= templateData.responseTypeColor %>"></span>
+			<span class="pull-right"><a href="../../responses/id/<%= templateData.response._id %>"><i><%= templateData.response._id %></i></a></span>
 			<span> <%= templateData.response.created_by %></span>
 			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
 			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
-			<button type="button" class="btn btn-link btn-sm reply-button" data-toggle="modal" data-target="#3responseModal">Reply</button>
+			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
 	</div>
 `
@@ -25,6 +23,10 @@ var responseTempalte = `
 var inputTemplate = `
 	<div class="inputTemplate">
 		<hr style="border: none; height:1px; background-color: black ">
+		<ul class="tab">
+		  <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'London')">Text</a></li>
+		  <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'Paris')">Cite</a></li>
+		</ul>
 		<form id="responseForm">
 			<div id="newResponseTitle" class="form-group row">
 				<div id="suggestedTitles">
@@ -191,30 +193,17 @@ function drawGraph(currentDiscussionId){
 			inner = svg.select("g");
 			svgGroup = svg.append("g");
 
-		var borderPath = svg.append("rect")
-   			.attr("x", 0)
-   			.attr("y", 0)
-   			.attr("height", "800px")
-   			.attr("width", "100%")
-   			.style("stroke", "#D3D3D3")
-   			.style("fill", "none")
-   			.style("stroke-width", 2);
-
-		
-
-		d3.select("svg").on("dblclick.zoom", null);
 
 		var render = new dagreD3.render();
-
-		render(d3.select("svg g"), g);
 
 		var svg = d3.select("svg"),
 	    	inner = d3.select("svg g"),
 	    	zoom = d3.behavior.zoom().on("zoom", function() {
-		      inner.attr("transform", "translate(" + d3.event.translate + ")" +
-		                                  "scale(" + d3.event.scale + ")");
-		    });
-		svg.call(zoom);
+				inner.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+		   	});
+		svg.call(zoom).on("dblclick.zoom", null);
+
+		render(d3.select("svg g"), g);
 
 		inner.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
@@ -224,23 +213,8 @@ function drawGraph(currentDiscussionId){
 			d3.event.stopPropagation();
 			nodeClicked = true;
 			if (replyClicked === true){
-				console.log(currentZoomScale, currentPosition);
 				g.node(id).label += "<div>" + inputTemplate + "</div>";
-
-				// var zoom = d3.behavior.zoom()
-				// 	.scale(currentZoomScale)
-				// 	.on("zoom", function() {
-			 //    		inner.attr("transform", "translate(" + d3.event.translate + ")" + "scale(" + d3.event.scale + ")")
-			 //    	});
-				// svg.call(zoom);
-
-				// d3.select("svg").on("dblclick.zoom", null);
-				// inner.attr("transform", "translate(" + currentPosition + ")" +
-		  //           "scale(" + currentZoomScale + ")");
-
 				render(d3.select("svg g"), g);
-
-
 			 	replyClicked = false;
 			}
 		})

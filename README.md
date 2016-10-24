@@ -11,9 +11,11 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - labels for form info overflow when screen is tight (they shouldn't)
 - ~~edge styles have grey at the ends (they shouldn't)~~ Altered: edge styles don't represent response relationships
 - lines wrap and break in-between words (they shouldn't)
+- line breaks sometimes go beyond node widths (they shouldn't)
+- ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
-- ~~link a citation instead of writing an argument as a response~~ Compelted 10/19/2016
+- ~~link a citation instead of writing an argument as a response~~ Completed 10/19/2016
 - implement article data type
 - accept JSON request from client
 - add comments to debate experiences and arguments
@@ -23,16 +25,18 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - editing previous arguments and keeping a version history of arguments
 - implement search box
 - implement filters for queries
-- make buttons for response types look better
+- ~~make buttons for response types look better~~ Altered: responses won't be happening with one field on the right side
 - style selected/unselected nodes better
 - implement max/min zoom
 - implement tags (possibly?)
-- add a meta data structure in db that holds things like arguments that cite, etc.
+- ~~add a meta data structure in db that holds things like arguments that cite, etc.~~ Completed 10/22/2016
 - Look into potential usability of: http://cpettitt.github.io/project/dagre-d3/latest/demo/clusters.html
-- Get Handlebars to work on server and client sides instead of using two different templating engines
+- ~~Get Handlebars to work on server and client sides instead of using two different templating engines~~ Altered: not necessary because there isn't a redundance of client-slide templating libaries
 - Implement Require.js: http://requirejs.org/docs/start.html
-- Figure out best place to put resposneTemplate
+- Figure out best place to put responseTemplate
 - A better way to getting relationship types when drawing nodes
+- ~~Fix adding response when zoomed~~ Completed 10/24/2016
+- Redo title finding to make it filter-based and use /responses with req.body.filter to specify titles
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code
@@ -46,3 +50,5 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - What restrictions will we place on user input? (word length, characters, allowable words, etc.)
 - Do we want edges to be curved or rigid? Rigid
 - Do we want a seperate data structure for argument titles? What is the performance difference?
+- Do we want to denormalize certain data structures (Holding aggregate values instead of complex queries)? <- Will have to measure performance evetually
+- Is it more efficient to register a reply button click on a node click, or is it more efficient to have a unique id to each reply button?
