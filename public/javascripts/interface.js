@@ -7,7 +7,21 @@ var responseFormat = "text";
 var currentZoomScale;
 var currentPosition;
 
-var responseTempalte = `
+var prefetchedResponses = [];
+
+var responseBrowserTemplate = `
+<% _.each(responses, function(response){ %>
+     <div class="thumbnail">
+      <div class="caption">
+        <span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/<%= response.title %>"><%= response.title %></a></i></font></span>
+        </br>
+        <div class="responseSampleThumbnail"><%= response.text %></div>
+      </div>
+    </div>
+<% }); %>
+      `
+
+var responseTemplate = `
 	<div>
 		<div class="<%= templateData.class %>">
 			<span class ="control glyphicon glyphicon-pawn" style="color:<%= templateData.responseTypeColor %>"></span>
@@ -23,16 +37,12 @@ var responseTempalte = `
 var inputTemplate = `
 	<div class="inputTemplate">
 		<hr style="border: none; height:1px; background-color: black ">
-		<ul class="tab">
-		  <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'London')">Text</a></li>
-		  <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event, 'Paris')">Cite</a></li>
-		</ul>
 		<form id="responseForm">
 			<div id="newResponseTitle" class="form-group row">
 				<div id="suggestedTitles">
 					Response title:
 					<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
-					<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#responseModal">Browse</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#responseModal" onclick="loadResponseBrowser()">Browse</button>
 				</div>
 			</div>
 			<div class="form-group row">
@@ -45,7 +55,23 @@ var inputTemplate = `
 	</div>
 	`
 
-var compiled = _.template(responseTempalte);
+function prefetchResponses(){
+	$.ajax({
+		type: "GET",
+		url: "../../api/responses",
+		success: function(data){
+			prefetchedResponses = data;
+		}
+	})
+}
+
+function loadResponseBrowser(){
+	var responseBrowser = _.template(responseBrowserTemplate);
+	$("#responseBrowser").html(responseBrowser({responses: prefetchedResponses}));
+	console.log({responses: prefetchedResponses})
+}
+
+var compiled = _.template(responseTemplate);
 
 $( document ).ready(function() {
 
@@ -58,7 +84,7 @@ $( document ).ready(function() {
 	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
 	
-	drawGraph(currentDiscussionId);
+	drawGraph(currentDiscussionId, function(){prefetchResponses()});
 
 	$('#responseForm').submit(function(event){
 		event.preventDefault();
@@ -103,19 +129,13 @@ $( document ).ready(function() {
 			responseFormat = "text";
 	    }
 	})
-
-	// var source   = $("#entry-template").html();
-	// var template = Handlebars.compile(source);
-	// var context = {title: "My New Post", body: "This is my first post!"};
-	// var html    = template(context);
-	// console.log(html);
 });
 
 function addNodeToGraph(nodeId, newResponse){
 	g.setNode("n"+nodeId, { id: "n"+nodeId, label: newResponse.responseTitle + "\n" + wordwrap(newResponse.responseText), class: "unselected-node "})	
 }
 
-function drawGraph(currentDiscussionId){
+function drawGraph(currentDiscussionId, callback){
 
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
 
@@ -205,6 +225,11 @@ function drawGraph(currentDiscussionId){
 
 		render(d3.select("svg g"), g);
 
+		callback();
+
+		//var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
+		//svgGroup.attr("transform", "translate(" + "50%" + ", 20)");
+
 		inner.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
 				textSelected = true;
@@ -258,10 +283,6 @@ function drawGraph(currentDiscussionId){
 		$('.testButton').click(function(e){
 			console.log(nc);
 		})
-
-
-		// var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
-		// svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
 		
     });
 }

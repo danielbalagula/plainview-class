@@ -30,13 +30,16 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - implement max/min zoom
 - implement tags (possibly?)
 - ~~add a meta data structure in db that holds things like arguments that cite, etc.~~ Completed 10/22/2016
-- Look into potential usability of: http://cpettitt.github.io/project/dagre-d3/latest/demo/clusters.html
+- look into potential usability of: http://cpettitt.github.io/project/dagre-d3/latest/demo/clusters.html
 - ~~Get Handlebars to work on server and client sides instead of using two different templating engines~~ Altered: not necessary because there isn't a redundance of client-slide templating libaries
-- Implement Require.js: http://requirejs.org/docs/start.html
-- Figure out best place to put responseTemplate
-- A better way to getting relationship types when drawing nodes
+- implement Require.js: http://requirejs.org/docs/start.html
+- implement Browserify: http://browserify.org/
+- figure out best place to put responseTemplate
+- a better way to getting relationship types when drawing nodes
 - ~~Fix adding response when zoomed~~ Completed 10/24/2016
-- Redo title finding to make it filter-based and use /responses with req.body.filter to specify titles
+- redo title finding to make it filter-based and use /responses with req.body.filter to specify titles
+- create a route for popular/featured responses that will show in the responseBrowser (instead of all responses)
+- current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrwoser.. look for better alternatives
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

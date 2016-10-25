@@ -6,122 +6,32 @@
 <script src="/javascripts/underscore.js"></script>
 <script src="/javascripts/interface.js"></script>
 
-<!-- <button class="testButton"></button>
- -->
+<script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js"></script>
+
 <div class="row">
 
-<!-- 	<div class="col-md-1"></div>
- -->
 	<div class="col-md-12">
 		<svg id="debateExperience" width=100% height=800px><g/></svg>
 
 	</div>
-
-<!-- 	<div class="col-md-3">
-		<div id="infoPanel" class="panel panel-default">
-			<div class="panel-heading">
-				<span id="infoPanelHeading" class="panel-title"></span>
-			</div>
-			<div class="panel-body" id="infoPanelBody">
-				<div id="currentResponseText"></div>
-			</div>
-			<div class="panel-footer">
-				<span class="citation">Citation number: </span><a href="" id="responseUrl"><span id="responseId" class="citation"></span></a>
-			</div>
-		</div>
-		<div id="responsePanel" class="panel panel-default">
-			<div class="panel-heading">
-			<span id="responsePanelHeading" class="panel-title">Submit a response</span>
-			<ul id="formatTabs" class="nav nav-tabs nav-justified">
-				<li class="active"><a href="#textTab" data-toggle="tab">Text</a></li>
-				<li ><a href="#linkTab" data-toggle="tab">Citation</a></li>
-			</ul>
-          
-			</div>
-			<div class="panel-body" id="infoPanelBody">
-				<form id="responseForm">
-					<div class="form-group row">
-						<div class="col-md-1">	
-						</div>
-						<div class="col-md-11">	
-							<div class="btn-toolbar" data-toggle="buttons">
-							  <label class="btn btn-info response-type">
-							    <input type="radio" name="responseType" value="subordinate" autocomplete="off"> Subordinate
-							  </label>
-							  <label class="btn btn-primary response-type">
-							    <input type="radio" name="responseType" value="dissent" autocomplete="off"> Dissent
-							  </label>
-							  <label class="btn btn-success response-type">
-							    <input type="radio" name="responseType" value="concur" autocomplete="off"> Concur
-							  </label>
-							  <label class="btn btn-warning response-type">
-							    <input type="radio" name="responseType" value="requestForClarification" autocomplete="off"> Request for clarification
-							  </label>
-							  <label class="btn btn-btn btn-danger response-type">
-							    <input type="radio" name="responseType" value="rejectPreviousArgumentType" autocomplete="off"> Reject previous argument type
-							  </label>
-							  <label class="btn btn-default response-type">
-							    <input type="radio" name="responseType" value="requestForFactualSubstantiation" autocomplete="off"> Request for factual substantiation
-							  </label>
-							</div>
-						</div>
-					</div>
-
-					<div class="tab-content">
-
-						<div class="tab-pane fade in active" id="textTab">
-							<div class="form-group row">
-						     <label for="newResponseTitle" class="col-sm-2 col-form-label">Argument title*</label>
-						     <div class="col-sm-10">
-						        <div id="suggestedTitles">
-								  <input class="typeahead form-control" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
-								</div>
-						     </div>
-					      	</div>
-					        <div class="form-group">
-						        <label for="newResponseText" class="col-sm-2 col-form-label">Response*</label>
-						        <textarea class="form-control" id="newResponseText" name="responseText" rows="10"></textarea>
-					        </div>
-			       		</div>
-			       		
-			       		<div class="tab-pane fade" id="linkTab">
-							<div class="form-group row">
-						     <label for="newResponseTitle" class="col-sm-2 col-form-label">Citation id or Link*</label>
-						      <div class="col-sm-10">
-						        <input type="text" class="form-control" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="linkCitationId">
-						      </div>
-					      	</div>
-			       		</div>
-
-			        </div>
-			       
-			        <div class="form-group">
-					    <div class="offset-sm-2 col-sm-10">
-					        <input type="submit" class="btn btn-primary"></button>
-					    </div>
-				    </div>
-				    
-					<input type="hidden" name="discussionId" value={{discussion.id}}>
-			    
-			    </form>
-			</div>
-		</div>
-	</div>
-</div> -->
 
 <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel">Browse Responses</h4>
       </div>
-      <div class="modal-body">
-        ...
+      <div id="responseBrowser" class="modal-body">
+
+      <% _.each(responses, function(response){ %>
+             <%= response.text %>
+      <% }); %>
+     
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary">Use</button>
       </div>
     </div>
   </div>

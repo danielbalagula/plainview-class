@@ -190,3 +190,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 .tt-suggestion p {
     margin: 0;
 }
+
+#responseBrowserModal {
+  width: 100%;
+}

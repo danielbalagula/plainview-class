@@ -45,7 +45,7 @@ router.post('/', function(req, res, next) {
 router.get('/', function(req, res, next) {
   req.body.filters = req.body.filters || {};
   Response.find(req.body.filters, function(err, foundResponses){
-    if (res.apiQuery){
+    if (req.apiQuery){
       res.json(foundResponses);
     } else {
       res.render('responses', {responses: foundResponses});
