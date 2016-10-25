@@ -40,6 +40,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - redo title finding to make it filter-based and use /responses with req.body.filter to specify titles
 - create a route for popular/featured responses that will show in the responseBrowser (instead of all responses)
 - current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrwoser.. look for better alternatives
+- evaluate whether ajax call for prefetched resposnes should happen before, during, or after initial graph rendering
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

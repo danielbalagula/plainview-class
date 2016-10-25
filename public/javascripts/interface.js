@@ -67,8 +67,7 @@ function prefetchResponses(){
 
 function loadResponseBrowser(){
 	var responseBrowser = _.template(responseBrowserTemplate);
-	$("#responseBrowser").html(responseBrowser({responses: prefetchedResponses}));
-	console.log({responses: prefetchedResponses})
+	$("#responses").html(responseBrowser({responses: prefetchedResponses}));
 }
 
 var compiled = _.template(responseTemplate);

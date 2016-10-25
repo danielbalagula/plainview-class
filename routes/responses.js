@@ -53,6 +53,17 @@ router.get('/', function(req, res, next) {
   })
 });
 
+router.get('/featured', function(req, res, next) {
+  req.body.filters = req.body.filters || {};
+  Response.find(req.body.filters, function(err, foundResponses){
+    if (req.apiQuery){
+      res.json(foundResponses);
+    } else {
+      res.render('responses', {responses: foundResponses});
+    }
+  })
+});
+
 router.get('/new', function(req, res, next) {
   res.render('new-response', {});
 });

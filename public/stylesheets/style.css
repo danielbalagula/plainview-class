@@ -138,6 +138,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   white-space: nowrap;
 }
 
+.top-buffer { margin-top:20px; }
+
 .node rect,
 .node circle,
 .node ellipse {
@@ -145,6 +147,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   fill: #fff;
   stroke-width: 0.66px;
 }
+
+#citationIdInput::-webkit-input-placeholder { font-style: italic; }
+#citationIdInput::-moz-placeholder { font-style: italic; }
 
 .tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
 .tt-hint {
@@ -191,6 +196,15 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     margin: 0;
 }
 
-#responseBrowserModal {
-  width: 100%;
+.modal.modal-wide .modal-dialog {
+  width: 90%;
+}
+.modal-wide .modal-body {
+  overflow-y: auto;
+}
+
+#responses {
+  max-height: 50%; 
+  overflow: auto;
+
 }
