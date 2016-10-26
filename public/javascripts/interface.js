@@ -19,9 +19,9 @@ var responseBrowserTemplate = `
         	<div class="row">
         		<%= response.text %>
         	</div>
-        	<div class="row">
-        		<button class="btn btn-sm pull-right">Cite Response</button>
-        		<button class="btn btn-sm btn-primary pull-right">Use Title</button>
+        	<div class="btn-toolbar btn-toolbar-sm pull-right">
+        		<button class="btn btn-sm btn-primary" onclick="useTitle('<%= response.title %>')">Use Title</button>
+        		<button class="btn btn-sm" onclick="citeResponse('<%= response._id %>')">Cite Response</button>
         	</div>
         </div>
       </div>
@@ -46,7 +46,7 @@ var inputTemplate = `
 	<div class="inputTemplate">
 		<hr style="border: none; height:1px; background-color: black ">
 		<form id="responseForm">
-			<div id="newResponseTitle" class="form-group row">
+			<div id="newResponseTitleDiv" class="form-group row">
 				<div id="suggestedTitles">
 					Response title:
 					<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
@@ -78,6 +78,16 @@ function fetchResponses(searchQuery){
 function loadResponseBrowser(){
 	var responseBrowser = _.template(responseBrowserTemplate);
 	$("#responses").html(responseBrowser({responses: prefetchedResponses}));
+}
+
+function useTitle(title){
+	$('#responseModal').modal('hide');
+	$('#newResponseTitle').val(title);
+	console.log(title);
+}
+
+function citeResponse(id){
+	console.log(id);
 }
 
 var compiled = _.template(responseTemplate);
@@ -156,7 +166,7 @@ function addNodeToGraph(nodeId, newResponse){
 	g.setNode("n"+nodeId, { id: "n"+nodeId, label: newResponse.responseTitle + "\n" + wordwrap(newResponse.responseText), class: "unselected-node "})	
 }
 
-function drawGraph(currentDiscussionId, callback){
+function drawGraph(currentDiscussionId, prefetchResponses){
 
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
 
@@ -200,7 +210,7 @@ function drawGraph(currentDiscussionId, callback){
 	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+currentResponse._id);
     	}
 
-    	setCurrentResponse();
+    	prefetchResponses();
 
 		g = new dagreD3.graphlib.Graph()
 		  .setGraph({})
@@ -234,7 +244,6 @@ function drawGraph(currentDiscussionId, callback){
 			inner = svg.select("g");
 			svgGroup = svg.append("g");
 
-
 		var render = new dagreD3.render();
 
 		var svg = d3.select("svg"),
@@ -245,8 +254,6 @@ function drawGraph(currentDiscussionId, callback){
 		svg.call(zoom).on("dblclick.zoom", null);
 
 		render(d3.select("svg g"), g);
-
-		callback();
 
 		//var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
 		//svgGroup.attr("transform", "translate(" + "50%" + ", 20)");
@@ -299,10 +306,6 @@ function drawGraph(currentDiscussionId, callback){
 
 		$('.reply-button').on('mouseup', function(e){
 			replyClicked = false;
-		})
-
-		$('.testButton').click(function(e){
-			console.log(nc);
 		})
 		
     });
