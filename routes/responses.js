@@ -41,7 +41,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-  getRegexFields(req.query);
+    console.log("this works at all")
   var query = getRegexFields(req.query);
   Response.find(query, function(err, foundResponses){
     if (req.apiQuery){
@@ -117,6 +117,7 @@ function validResponse(response){
 }
 
 function getRegexFields(query){
+    console.log("got here");
   for (var field in query) {
     if (query.hasOwnProperty(field)) {
         query[field] = new RegExp(query[field], 'i')

@@ -1,7 +1,6 @@
 var currentDiscussionId;
 var localData;
 var currentResponse;
-var highlighted = false;
 var responseFormat = "text";
 
 var currentZoomScale;
@@ -90,97 +89,46 @@ function citeResponse(id){
 	console.log(id);
 }
 
-var compiled = _.template(responseTemplate);
+var compiledResponseTemplate = _.template(responseTemplate);
 
 $( document ).ready(function() {
-
-	$( document ).on( "mousemove", function( event ) {
-		mouseY = event.pageY;
-		mouseX = event.pageX;
-	});
-
 	startBloodhound();
-	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
-	
-	drawGraph(currentDiscussionId, function(){fetchResponses()});
-
-	$('#responseForm').submit(function(event){
-		event.preventDefault();
-		if (responseFormat === "text"){
-			var newResponse = {
-				discussionId: currentDiscussionId,
-				citation: false,
-				responseTitle: $("#newResponseTitle").val(),
-				responseText: $('#newResponseText').val(),
-				relatedResponse: currentResponse._id,
-				relationshipType: $("input:radio[name ='responseType']:checked").val()
-			}
-			addNodeToGraph($.ajax({
-				type: "POST",
-				url: "/responses",
-				data: JSON.stringify(newResponse),
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-			}), newResponse);
-		} else if (responseFormat === "link"){
-			var newResponse = {
-				discussionId: currentDiscussionId,
-				citation: true,
-				citationId: $("#linkCitationId").val(),
-				relatedResponse: currentResponse._id,
-				relationshipType: $("input:radio[name ='responseType']:checked").val()
-			}
-			addNodeToGraph($.ajax({
-				type: "POST",
-				url: "/discussions/addCitationToDiscussion",
-				data: JSON.stringify(newResponse),
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-			}), newResponse);
-		}
-	});
-
-	$("#formatTabs").on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-	    if (e.target.hash === "#linkTab"){
-	    	responseFormat = "link";
-	    } else if (e.target.hash === "#textTab"){
-			responseFormat = "text";
-	    }
-	})
-
-	$('#responseBrowserSearchButton').click(function(e) {
-		e.preventDefault();
-      	var searchQuery = {
-      		title: ($('#responseTitle').val()),
-      		text: ($('#responseKeywords').val())
-      	};
-      	fetchResponses(searchQuery);
-    });
-
-
+	drawGraph(currentDiscussionId, fetchResponses);
 });
 
-
-function addNodeToGraph(nodeId, newResponse){
-	g.setNode("n"+nodeId, { id: "n"+nodeId, label: newResponse.responseTitle + "\n" + wordwrap(newResponse.responseText), class: "unselected-node "})	
-}
-
 function drawGraph(currentDiscussionId, prefetchResponses){
+
+	var mouseMovement;
+
+	var highlighted = false; //checks if a current node is highlighted
+	var nodeClicked = false; //checks if a node was clicked
+	var replyClicked = false; //checks if the reply button was clicked
+	var argumentsToRespondTo = []; //an array of arguments the user is planning to respond to simultaneously
+
+	g = new dagreD3.graphlib.Graph()
+		.setGraph({})
+		.setDefaultEdgeLabel(function() { return {}; });
+
+	var svg = d3.select("svg"),
+		inner = svg.select("g");
+	svgGroup = svg.append("g");
+
+	var render = new dagreD3.render();
+
+	var svg = d3.select("svg"),
+		inner = d3.select("svg g"),
+		zoom = d3.behavior.zoom().on("zoom", function() {
+			inner.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+		});
+	svg.call(zoom).on("dblclick.zoom", null);
 
     d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
 
     	var localData = data;
 
-    	var mouseMovement;
-
-    	var highlighted = false;
-    	var nodeClicked = false;
-    	var replyClicked = false;
-
     	var discussion = data.discussion;
     	var responses = data.responses;
-    	var argumentsToRespondTo = [];
 
     	var responseColors = {
     		'subordinate': '#4286f4',
@@ -191,38 +139,15 @@ function drawGraph(currentDiscussionId, prefetchResponses){
     		'requestForFactualSubstantiation' : '#848484'
     	}
 
-
-		function findResponseById(id){
-			for (index in data.responses){
-				if ("n"+data.responses[index]._id === id) { return data.responses[index] };
-			}
-		}
-
-    	function setCurrentResponse(responseId){
-    		if (responseId) { 
-    			currentResponse = findResponseById(responseId); 
-    		} else { 
-    			currentResponse = data.responses[0]; 
-    		}
-			$('#infoPanelHeading').text(currentResponse.title);
-	    	$('#currentResponseText').text(currentResponse.text.replace(/<br>/g, ''));
-	    	$('#responseId').text(currentResponse._id);
-	    	$("#responseUrl").attr("href", "http://localhost:3000/responses/id/"+currentResponse._id);
-    	}
-
     	prefetchResponses();
-
-		g = new dagreD3.graphlib.Graph()
-		  .setGraph({})
-		  .setDefaultEdgeLabel(function() { return {}; });
 
     	responses.forEach(function(response){
     		var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
     		if (discussion.citations.indexOf(response._id) !== -1){
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
     		} else {
     			response.text = response.text.replace(/(.{80})/g, "$1<br>")
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiled({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
+    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
     		}
     		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
     			if (relationship.hasOwnProperty(response._id)){
@@ -239,19 +164,6 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 		  var node = g.node(v);
 		  node.rx = node.ry = 1;
 		});
-
-		var svg = d3.select("svg"),
-			inner = svg.select("g");
-			svgGroup = svg.append("g");
-
-		var render = new dagreD3.render();
-
-		var svg = d3.select("svg"),
-	    	inner = d3.select("svg g"),
-	    	zoom = d3.behavior.zoom().on("zoom", function() {
-				inner.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-		   	});
-		svg.call(zoom).on("dblclick.zoom", null);
 
 		render(d3.select("svg g"), g);
 
@@ -279,26 +191,26 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 			}
 		})
 
-		svg.selectAll(".node").on("click", function(id) {
-			var index = argumentsToRespondTo.indexOf(id);
-			if (mouseMovement) return; 
-			if (highlighted === true){
-				nodeClicked = false;
-				highlighted = false;
-				return;
-			}
-			if (index === -1){
-				argumentsToRespondTo.push(id);
-				svg.select(".selected-node").classed("selected-node", false);
-				svg.select("#"+id).classed("selected-node", true);
-				svg.select("#"+id).classed("unselected-node", false);
-				setCurrentResponse(id);
-			} else {
-				argumentsToRespondTo.splice(index, 1);
-				svg.select("#"+id).classed("selected-node", false);
-				svg.select("#"+id).classed("unselected-node", true);
-			}
-		});
+		// svg.selectAll(".node").on("click", function(id) {
+		// 	var index = argumentsToRespondTo.indexOf(id);
+		// 	if (mouseMovement) return;
+		// 	if (highlighted === true){
+		// 		nodeClicked = false;
+		// 		highlighted = false;
+		// 		return;
+		// 	}
+		// 	if (index === -1){
+		// 		argumentsToRespondTo.push(id);
+		// 		svg.select(".selected-node").classed("selected-node", false);
+		// 		svg.select("#"+id).classed("selected-node", true);
+		// 		svg.select("#"+id).classed("unselected-node", false);
+		// 		setCurrentResponse(id);
+		// 	} else {
+		// 		argumentsToRespondTo.splice(index, 1);
+		// 		svg.select("#"+id).classed("selected-node", false);
+		// 		svg.select("#"+id).classed("unselected-node", true);
+		// 	}
+		// });
 
 		$('.reply-button').on('mousedown', function(e){
 			replyClicked = true;
@@ -307,17 +219,20 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 		$('.reply-button').on('mouseup', function(e){
 			replyClicked = false;
 		})
+
+		$('#responseBrowserSearchButton').click(function(e) {
+			e.preventDefault();
+			var searchQuery = {
+				title: ($('#responseTitle').val()),
+				text: ($('#responseKeywords').val())
+			};
+			fetchResponses(searchQuery);
+		});
 		
     });
-}
 
-function wordwrap( str, width, brk, cut ) {
-    brk = brk || '5<br>';
-    width = width || 20;
-    cut = cut || false;
+	function addNodeToGraph(nodeId, newResponse){
 
-    if (!str) { return str; }
+	}
 
-    var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
-     return str.match( RegExp(regex, 'g') ).join( brk );
 }
