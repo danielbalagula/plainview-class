@@ -197,14 +197,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 }
 
 .modal.modal-wide .modal-dialog {
-  width: 90%;
+  width: 66%;
 }
 .modal-wide .modal-body {
   overflow-y: auto;
 }
 
 #responses {
-  max-height: 50%; 
+  height: 400px; 
   overflow: auto;
-
 }

@@ -24,7 +24,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - implement better argument title suggestion algorithm/api
 - editing previous arguments and keeping a version history of arguments
 - implement search box
-- implement filters for queries
+- ~~implement filters for queries~~ Completed 10/25/2016
 - ~~make buttons for response types look better~~ Altered: responses won't be happening with one field on the right side
 - style selected/unselected nodes better
 - implement max/min zoom
@@ -41,6 +41,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - create a route for popular/featured responses that will show in the responseBrowser (instead of all responses)
 - current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrwoser.. look for better alternatives
 - evaluate whether ajax call for prefetched resposnes should happen before, during, or after initial graph rendering
+- Implement responseBrowser auto-search after the user has stopped typing for a few seconds, so they don't have to click "Search"
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

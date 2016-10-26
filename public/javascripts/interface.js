@@ -13,9 +13,17 @@ var responseBrowserTemplate = `
 <% _.each(responses, function(response){ %>
      <div class="thumbnail">
       <div class="caption">
-        <span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/<%= response.title %>"><%= response.title %></a></i></font></span>
+        <span class="pull-left"> <font size=3 color='grey'><i><a href="/responses/<%= response.title %>"><%= response.title %></a></i></font></span>
         </br>
-        <div class="responseSampleThumbnail"><%= response.text %></div>
+        <div class="responseSampleThumbnail">
+        	<div class="row">
+        		<%= response.text %>
+        	</div>
+        	<div class="row">
+        		<button class="btn btn-sm pull-right">Cite Response</button>
+        		<button class="btn btn-sm btn-primary pull-right">Use Title</button>
+        	</div>
+        </div>
       </div>
     </div>
 <% }); %>
@@ -55,12 +63,14 @@ var inputTemplate = `
 	</div>
 	`
 
-function prefetchResponses(){
+function fetchResponses(searchQuery){
 	$.ajax({
 		type: "GET",
 		url: "../../api/responses",
+		data: searchQuery,
 		success: function(data){
 			prefetchedResponses = data;
+			loadResponseBrowser();
 		}
 	})
 }
@@ -83,7 +93,7 @@ $( document ).ready(function() {
 	
 	currentDiscussionId = $( ".discussionId" ).attr('id');
 	
-	drawGraph(currentDiscussionId, function(){prefetchResponses()});
+	drawGraph(currentDiscussionId, function(){fetchResponses()});
 
 	$('#responseForm').submit(function(event){
 		event.preventDefault();
@@ -128,7 +138,19 @@ $( document ).ready(function() {
 			responseFormat = "text";
 	    }
 	})
+
+	$('#responseBrowserSearchButton').click(function(e) {
+		e.preventDefault();
+      	var searchQuery = {
+      		title: ($('#responseTitle').val()),
+      		text: ($('#responseKeywords').val())
+      	};
+      	fetchResponses(searchQuery);
+    });
+
+
 });
+
 
 function addNodeToGraph(nodeId, newResponse){
 	g.setNode("n"+nodeId, { id: "n"+nodeId, label: newResponse.responseTitle + "\n" + wordwrap(newResponse.responseText), class: "unselected-node "})	

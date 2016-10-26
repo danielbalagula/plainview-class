@@ -17,10 +17,8 @@ router.post('/', function(req, res, next) {
       citation: false
     });
   newResponse.save(function(err, savedResponse){
-    console.log(savedResponse);
     var relationship = {}
     relationship[savedResponse.id] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
-    console.log(relationship);
     Discussion.findByIdAndUpdate(currentDiscussionId,
       {$push: {"responses": savedResponse.id, "relationships": relationship }},
       {safe: true, upsert: true},
@@ -43,9 +41,11 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-  req.body.filters = req.body.filters || {};
-  Response.find(req.body.filters, function(err, foundResponses){
+  getRegexFields(req.query);
+  var query = getRegexFields(req.query);
+  Response.find(query, function(err, foundResponses){
     if (req.apiQuery){
+      console.log(foundResponses);
       res.json(foundResponses);
     } else {
       res.render('responses', {responses: foundResponses});
@@ -114,4 +114,13 @@ module.exports = router;
 
 function validResponse(response){
 	return true;
+}
+
+function getRegexFields(query){
+  for (var field in query) {
+    if (query.hasOwnProperty(field)) {
+        query[field] = new RegExp(query[field], 'i')
+    }
+  }
+  return query
 }
