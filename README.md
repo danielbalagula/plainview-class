@@ -41,7 +41,8 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - create a route for popular/featured responses that will show in the responseBrowser (instead of all responses)
 - current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrwoser.. look for better alternatives
 - evaluate whether ajax call for prefetched resposnes should happen before, during, or after initial graph rendering
-- Implement responseBrowser auto-search after the user has stopped typing for a few seconds, so they don't have to click "Search"
+- implement responseBrowser auto-search after the user has stopped typing for a few seconds, so they don't have to click "Search"
+- there's no efficient connection between responseBrowser results and using them in the code... currently using grep (inefficient af)
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code

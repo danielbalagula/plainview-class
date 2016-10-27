@@ -1,12 +1,22 @@
 var currentDiscussionId;
-var localData;
 var currentResponse;
-var responseFormat = "text";
 
-var currentZoomScale;
-var currentPosition;
+var fetchedResponses = [];
 
-var prefetchedResponses = [];
+var responseColors = {
+	'subordinate': '#4286f4',
+	'concur' : '#7af442',
+	'dissnet' : '#1d00ff',
+	'requestForClarification' : '#d8d147',
+	'rejectPreviousArgumentType' : '#ef0000',
+	'requestForFactualSubstantiation' : '#848484'
+}
+
+var highlighted = false; //checks if a current node is highlighted
+var nodeClicked = false; //checks if a node was clicked
+var replyClicked = false; //checks if the reply button was clicked
+var argumentsToRespondTo = []; //an array of arguments the user is planning to respond to simultaneously
+
 
 var responseBrowserTemplate = `
 <% _.each(responses, function(response){ %>
@@ -27,6 +37,7 @@ var responseBrowserTemplate = `
     </div>
 <% }); %>
       `
+var responseBrowser = _.template(responseBrowserTemplate);
 
 var responseTemplate = `
 	<div>
@@ -40,6 +51,7 @@ var responseTemplate = `
 		</div>
 	</div>
 `
+var compiledResponseTemplate = _.template(responseTemplate);
 
 var inputTemplate = `
 	<div class="inputTemplate">
@@ -62,57 +74,13 @@ var inputTemplate = `
 	</div>
 	`
 
-function fetchResponses(searchQuery){
-	$.ajax({
-		type: "GET",
-		url: "../../api/responses",
-		data: searchQuery,
-		success: function(data){
-			prefetchedResponses = data;
-			loadResponseBrowser();
-		}
-	})
-}
-
-function loadResponseBrowser(){
-	var responseBrowser = _.template(responseBrowserTemplate);
-	$("#responses").html(responseBrowser({responses: prefetchedResponses}));
-}
-
-function useTitle(title){
-	$('#responseModal').modal('hide');
-	$('#newResponseTitle').val(title);
-	console.log(title);
-}
-
-function citeResponse(id){
-	console.log(id);
-}
-
-var compiledResponseTemplate = _.template(responseTemplate);
-
 $( document ).ready(function() {
-	startBloodhound();
-	currentDiscussionId = $( ".discussionId" ).attr('id');
-	drawGraph(currentDiscussionId, fetchResponses);
-});
+	
+	var currentDiscussionId = $( ".discussionId" ).attr('id');
 
-function drawGraph(currentDiscussionId, prefetchResponses){
-
-	var mouseMovement;
-
-	var highlighted = false; //checks if a current node is highlighted
-	var nodeClicked = false; //checks if a node was clicked
-	var replyClicked = false; //checks if the reply button was clicked
-	var argumentsToRespondTo = []; //an array of arguments the user is planning to respond to simultaneously
-
-	g = new dagreD3.graphlib.Graph()
+	var g = new dagreD3.graphlib.Graph()
 		.setGraph({})
 		.setDefaultEdgeLabel(function() { return {}; });
-
-	var svg = d3.select("svg"),
-		inner = svg.select("g");
-	svgGroup = svg.append("g");
 
 	var render = new dagreD3.render();
 
@@ -123,52 +91,69 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 		});
 	svg.call(zoom).on("dblclick.zoom", null);
 
-    d3.json('http://localhost:3000/api/discussions/id/' + currentDiscussionId, function(data){
+	fetchResponses();
+	initializeGraph(svg, inner, render);
+	startBloodhound();
 
-    	var localData = data;
+});
 
-    	var discussion = data.discussion;
-    	var responses = data.responses;
+function fetchResponses(searchQuery){
+	$.ajax({
+		type: "GET",
+		url: "../../api/responses",
+		data: searchQuery,
+		success: function(data){
+			fetchedResponses = data;
+			loadResponseBrowser();
+		}
+	})
+}
 
-    	var responseColors = {
-    		'subordinate': '#4286f4',
-    		'concur' : '#7af442',
-    		'dissnet' : '#1d00ff',
-    		'requestForClarification' : '#d8d147',
-    		'rejectPreviousArgumentType' : '#ef0000',
-    		'requestForFactualSubstantiation' : '#848484'
-    	}
+function loadResponseBrowser(){
+	$("#responses").html(responseBrowser({responses: fetchedResponses}));
+}
 
-    	prefetchResponses();
+function useTitle(title){
+	$('#responseModal').modal('hide');
+	$('#newResponseTitle').val(title);
+}
 
-    	responses.forEach(function(response){
-    		var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
-    		if (discussion.citations.indexOf(response._id) !== -1){
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
-    		} else {
-    			response.text = response.text.replace(/(.{80})/g, "$1<br>")
-    			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
-    		}
-    		discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
-    			if (relationship.hasOwnProperty(response._id)){
-    				g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
-    					style: "fill: none;",
-    					arrowhead: 'undirected',
-    					// lineInterpolate: 'basis'
-    				});
-    			}
-    		})
-    	});
+function citeResponse(id){
+	$('#responseModal').modal('hide');
+	addNewNode($.grep(responses, function(e){ return e._id == id; });)
+}
 
-    	g.nodes().forEach(function(v) {
+var mouseMovement;
+
+function initializeGraph(svg, inner, render){
+	d3.json('http://localhost:3000/api/discussions/id/' + '580fc1852b1132746263b79f', function(data){
+		responses = data.responses;
+		discussion = data.discussion;
+		responses.forEach(function(response){
+			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
+			if (discussion.citations.indexOf(response._id) !== -1){
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
+			} else {
+				response.text = response.text.replace(/(.{80})/g, "$1<br>")
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
+			}
+			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
+				if (relationship.hasOwnProperty(response._id)){
+					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
+						style: "fill: none;",
+						arrowhead: 'undirected',
+						// lineInterpolate: 'basis'
+					});
+				}
+			})
+		});
+
+		g.nodes().forEach(function(v) {
 		  var node = g.node(v);
 		  node.rx = node.ry = 1;
 		});
 
 		render(d3.select("svg g"), g);
-
-		//var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
-		//svgGroup.attr("transform", "translate(" + "50%" + ", 20)");
 
 		inner.selectAll(".node").on('mousedown', function(id){
 			if (mouseMovement){
@@ -191,27 +176,6 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 			}
 		})
 
-		// svg.selectAll(".node").on("click", function(id) {
-		// 	var index = argumentsToRespondTo.indexOf(id);
-		// 	if (mouseMovement) return;
-		// 	if (highlighted === true){
-		// 		nodeClicked = false;
-		// 		highlighted = false;
-		// 		return;
-		// 	}
-		// 	if (index === -1){
-		// 		argumentsToRespondTo.push(id);
-		// 		svg.select(".selected-node").classed("selected-node", false);
-		// 		svg.select("#"+id).classed("selected-node", true);
-		// 		svg.select("#"+id).classed("unselected-node", false);
-		// 		setCurrentResponse(id);
-		// 	} else {
-		// 		argumentsToRespondTo.splice(index, 1);
-		// 		svg.select("#"+id).classed("selected-node", false);
-		// 		svg.select("#"+id).classed("unselected-node", true);
-		// 	}
-		// });
-
 		$('.reply-button').on('mousedown', function(e){
 			replyClicked = true;
 		})		
@@ -228,11 +192,6 @@ function drawGraph(currentDiscussionId, prefetchResponses){
 			};
 			fetchResponses(searchQuery);
 		});
-		
-    });
-
-	function addNodeToGraph(nodeId, newResponse){
-
-	}
+	});
 
 }
