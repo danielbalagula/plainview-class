@@ -1,3 +1,8 @@
+var g;
+var svg;
+var inner;
+var zoom;
+
 var currentDiscussionId;
 var currentResponse;
 
@@ -38,6 +43,10 @@ $( document ).ready(function() {
 	initializeGraph(currentDiscussionId ,svg, inner, render, g);
 	startBloodhound();
 
+	$('#test').click(function(e){
+		console.log(e)
+	})
+
 });
 
 function fetchResponses(searchQuery){
@@ -52,21 +61,11 @@ function fetchResponses(searchQuery){
 	})
 }
 
-function loadResponseBrowser(){
-	$("#responses").html(responseBrowser({responses: fetchedResponses}));
-}
-
-function useTitle(title){
-	$('#responseModal').modal('hide');
-	$('#newResponseTitle').val(title);
-}
-
-function citeResponse(id){
-	$('#responseModal').modal('hide');
-	// addNewNode($.grep(responses, function(e){ return e._id == id; });)
-}
-
 var mouseMovement;
+
+function addNewNode(response){
+	console.log(response)
+}
 
 function initializeGraph(id, svg, inner, render, g){
 	d3.json('http://localhost:3000/api/discussions/id/' + id, function(data){
@@ -75,7 +74,7 @@ function initializeGraph(id, svg, inner, render, g){
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {jsonData: JSON.stringify(response), response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
 			} else {
 				response.text = response.text.replace(/(.{80})/g, "$1<br>")
 				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
@@ -117,7 +116,7 @@ function initializeGraph(id, svg, inner, render, g){
 			if (nodeClicked === true){
 				highlighted = true;
 			}
-		})
+		})	
 
 		$('.reply-button').on('mousedown', function(e){
 			replyClicked = true;
