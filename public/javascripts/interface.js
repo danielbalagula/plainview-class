@@ -61,6 +61,10 @@ function fetchResponses(searchQuery){
 	})
 }
 
+function loadResponseBrowser(){
+	$("#responses").html(responseBrowser({responses: fetchedResponses}));
+}
+
 var mouseMovement;
 
 function addNewNode(response){
@@ -74,7 +78,7 @@ function initializeGraph(id, svg, inner, render, g){
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {jsonData: JSON.stringify(response), response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
 			} else {
 				response.text = response.text.replace(/(.{80})/g, "$1<br>")
 				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
@@ -104,11 +108,6 @@ function initializeGraph(id, svg, inner, render, g){
 			}
 			d3.event.stopPropagation();
 			nodeClicked = true;
-			if (replyClicked === true){
-				g.node(id).label += "<div>" + inputTemplate + "</div>";
-				render(d3.select("svg g"), g);
-			 	replyClicked = false;
-			}
 		})
 
 		svg.selectAll(".node").on('mousemove', function(){
@@ -117,13 +116,20 @@ function initializeGraph(id, svg, inner, render, g){
 				highlighted = true;
 			}
 		})	
+	
+		$('.cite-response').click(function(e){
+			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; });
+			$('#responseModal').modal('hide');
+			g.setNode("n"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
+			console.log(clickedResponse)
+			render(d3.select("svg g"), g);
+		})
 
-		$('.reply-button').on('mousedown', function(e){
-			replyClicked = true;
-		})		
-
-		$('.reply-button').on('mouseup', function(e){
-			replyClicked = false;
+		$('.reply-button').click(function(e){
+			var idOfClickedResponse = $(e.target).closest('.unselected-node').attr('id');
+			g.node(idOfClickedResponse).label += "<div>" + inputTemplate + "</div>";
+			render(d3.select("svg g"), g);
 		})
 
 		$('#responseBrowserSearchButton').click(function(e) {

@@ -1,6 +1,6 @@
 var responseBrowserTemplate = `
 <% _.each(responses, function(response){ %>
-     <div class="thumbnail">
+     <div class="thumbnail" id="<%= response._id %>">
       <div class="caption">
         <span class="pull-left"> <font size=3 color='grey'><i><a href="/responses/<%= response.title %>"><%= response.title %></a></i></font></span>
         </br>
@@ -9,12 +9,12 @@ var responseBrowserTemplate = `
         		<%= response.text %>
         	</div>
         	<div class="btn-toolbar btn-toolbar-sm pull-right">
-        		<button class="btn btn-sm btn-primary" id="test" data-params='<%= response %>'">Use Title</button>
+        		<button class="btn btn-sm btn-primary" id="test">Use Title</button>
         		<button class="btn btn-sm cite-response")">Cite Response</button>
         	</div>
         </div>
       </div>
-    </div>
+     </div>
 <% }); %>
       `
 var responseBrowser = _.template(responseBrowserTemplate);
