@@ -41,14 +41,14 @@ var inputTemplate = `
 				<div id="suggestedTitles">
 					Response title:
 					<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
-					<button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#responseModal">Browse</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm"  data-toggle="modal" data-target="#responseModal">Browse</button>
 				</div>
 			</div>
 			<div class="form-group row">
 				<textarea rows="10" style="width:90%; border:solid .33px gray; resize: none;"></textarea>
 			</div>
 			<div class="form-group row">
-				<button type="button" class="btn btn-sm reply-button">Submit</button>
+				<button type="button" id="test" class="btn btn-sm submit-reply-button" onclick="alert('123')">Submit</button>
 			</div>
 		</form>
 	</div>

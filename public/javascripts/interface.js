@@ -42,10 +42,10 @@ $( document ).ready(function() {
 	fetchResponses();
 	initializeGraph(currentDiscussionId ,svg, inner, render, g);
 	startBloodhound();
-
-	$('#test').click(function(e){
+	
+	$('.inputTemplate').on('click',function(e){
 		console.log(e)
-	})
+		})
 
 });
 
@@ -93,43 +93,36 @@ function initializeGraph(id, svg, inner, render, g){
 				}
 			})
 		});
-
-		g.nodes().forEach(function(v) {
-		  var node = g.node(v);
-		  node.rx = node.ry = 1;
-		});
-
-		render(d3.select("svg g"), g);
-
-		inner.selectAll(".node").on('mousedown', function(id){
-			if (mouseMovement){
-				textSelected = true;
-				mouseMovement = false;
-			}
-			d3.event.stopPropagation();
-			nodeClicked = true;
-		})
-
-		svg.selectAll(".node").on('mousemove', function(){
-			mouseMovement = true;
-			if (nodeClicked === true){
-				highlighted = true;
-			}
-		})	
+		
+		renderGraph(g, render, inner, svg)
 	
 		$('.cite-response').click(function(e){
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
-			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; });
+			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
+			
+			clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
 			$('#responseModal').modal('hide');
-			g.setNode("n"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
-			console.log(clickedResponse)
-			render(d3.select("svg g"), g);
+			g.setNode("n2"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
+			g.setEdge(currentResponse, "n2"+idOfClickedResponse, {	
+				style: "fill: none;",
+				arrowhead: 'undirected',
+			});			
+			console.log(currentResponse)
+			renderGraph(g, render, inner, svg);
+		});
+		
+		$('.node').click(function(e){
+			currentResponse = e.currentTarget.id;
 		})
 
 		$('.reply-button').click(function(e){
 			var idOfClickedResponse = $(e.target).closest('.unselected-node').attr('id');
 			g.node(idOfClickedResponse).label += "<div>" + inputTemplate + "</div>";
-			render(d3.select("svg g"), g);
+			renderGraph(g, render, inner, svg);
+		});
+		
+	$('.inputTemplate').click(function(e){
+		console.log(e)
 		})
 
 		$('#responseBrowserSearchButton').click(function(e) {
@@ -142,4 +135,29 @@ function initializeGraph(id, svg, inner, render, g){
 		});
 	});
 
+}
+
+function renderGraph(g, render, inner, svg){
+	g.nodes().forEach(function(v) {
+	  var node = g.node(v);
+	  node.rx = node.ry = 1;
+	});
+
+	render(d3.select("svg g"), g);
+
+	inner.selectAll(".node").on('mousedown', function(id){
+		if (mouseMovement){
+			textSelected = true;
+			mouseMovement = false;
+		}
+		d3.event.stopPropagation();
+		nodeClicked = true;
+	})
+
+	svg.selectAll(".node").on('mousemove', function(){
+		mouseMovement = true;
+		if (nodeClicked === true){
+			highlighted = true;
+		}
+	})	
 }
