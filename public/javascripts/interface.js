@@ -11,18 +11,15 @@ var fetchedResponses = [];
 var responseColors = {
 	'subordinate': '#4286f4',
 	'concur' : '#7af442',
-	'dissnet' : '#1d00ff',
+	'dissent' : '#1d00ff',
 	'requestForClarification' : '#d8d147',
 	'rejectPreviousArgumentType' : '#ef0000',
 	'requestForFactualSubstantiation' : '#848484'
 }
 
-var highlighted = false; //checks if a current node is highlighted
-var nodeClicked = false; //checks if a node was clicked
-var replyClicked = false; //checks if the reply button was clicked
 var argumentsToRespondTo = []; //an array of arguments the user is planning to respond to simultaneously
 
-$( document ).ready(function() {
+$(document).ready(function() {
 	
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
 
@@ -43,10 +40,6 @@ $( document ).ready(function() {
 	initializeGraph(currentDiscussionId ,svg, inner, render, g);
 	startBloodhound();
 	
-	$('.inputTemplate').on('click',function(e){
-		console.log(e)
-		})
-
 });
 
 function fetchResponses(searchQuery){
@@ -57,6 +50,22 @@ function fetchResponses(searchQuery){
 		success: function(data){
 			fetchedResponses = data;
 			loadResponseBrowser();
+		}
+	})
+}
+
+function addCitationToDiscussion(id, callback){
+	$.ajax({
+		type: "POST",
+		url: "../../addCitationToDiscussion",
+		data: {
+			discussionId: currentDiscussionId,
+			citationId: currentResponse,
+			relatedResponse: id,
+			relationshipType: 'dissent'
+		},
+		success: function(data){
+			callback();
 		}
 	})
 }
@@ -100,16 +109,30 @@ function initializeGraph(id, svg, inner, render, g){
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			
-			clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
-			$('#responseModal').modal('hide');
-			g.setNode("n2"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
-			g.setEdge(currentResponse, "n2"+idOfClickedResponse, {	
-				style: "fill: none;",
-				arrowhead: 'undirected',
-			});			
-			console.log(currentResponse)
-			renderGraph(g, render, inner, svg);
+			if ("n"+idOfClickedResponse !== currentResponse){
+				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
+				addCitationToDiscussion(idOfClickedResponse, function(){
+					$('#responseModal').modal('hide');
+					g.setNode("n"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
+					g.setEdge(currentResponse, "n"+idOfClickedResponse, {	
+						style: "fill: none;",
+						arrowhead: 'undirected',
+					});
+					renderGraph(g, render, inner, svg);	
+				});
+			} else {
+				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
+					$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
+				}
+			}		
 		});
+
+		$('.use-title').click(function(e){
+			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+			var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
+			$('#responseModal').modal('hide');
+			$('#newResponseTitle').val(clickedResponseTitle);
+		})
 		
 		$('.node').click(function(e){
 			currentResponse = e.currentTarget.id;
@@ -121,10 +144,6 @@ function initializeGraph(id, svg, inner, render, g){
 			renderGraph(g, render, inner, svg);
 		});
 		
-	$('.inputTemplate').click(function(e){
-		console.log(e)
-		})
-
 		$('#responseBrowserSearchButton').click(function(e) {
 			e.preventDefault();
 			var searchQuery = {
@@ -151,13 +170,9 @@ function renderGraph(g, render, inner, svg){
 			mouseMovement = false;
 		}
 		d3.event.stopPropagation();
-		nodeClicked = true;
 	})
 
 	svg.selectAll(".node").on('mousemove', function(){
 		mouseMovement = true;
-		if (nodeClicked === true){
-			highlighted = true;
-		}
 	})	
 }

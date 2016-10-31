@@ -9,7 +9,7 @@ var responseBrowserTemplate = `
         		<%= response.text %>
         	</div>
         	<div class="btn-toolbar btn-toolbar-sm pull-right">
-        		<button class="btn btn-sm btn-primary" id="test">Use Title</button>
+        		<button class="btn btn-sm btn-primary use-title">Use Title</button>
         		<button class="btn btn-sm cite-response")">Cite Response</button>
         	</div>
         </div>
