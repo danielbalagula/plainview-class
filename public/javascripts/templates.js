@@ -27,7 +27,7 @@ var responseTemplate = `
 			<span> <%= templateData.response.created_by %></span>
 			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
 			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
-			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
+			<button type="button" onclick="testFunction()" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
 	</div>
 `

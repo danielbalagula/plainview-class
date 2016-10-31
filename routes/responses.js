@@ -14,7 +14,6 @@ router.post('/', function(req, res, next) {
       title: req.body.responseTitle,
       text: req.body.responseText,
       created_by: 'Daniel',
-      citation: false
     });
   newResponse.save(function(err, savedResponse){
     var relationship = {}
@@ -26,7 +25,7 @@ router.post('/', function(req, res, next) {
         if (req.apiQuery){
           res.redirect('api/discussions/id/' + currentDiscussionId);
         } else {
-          res.send(savedResponse.id.toString());
+          res.json(savedResponse);
         }
       });
     });

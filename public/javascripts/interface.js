@@ -54,20 +54,38 @@ function fetchResponses(searchQuery){
 	})
 }
 
-function addCitationToDiscussion(id, callback){
-	$.ajax({
-		type: "POST",
-		url: "../../addCitationToDiscussion",
-		data: {
-			discussionId: currentDiscussionId,
-			citationId: currentResponse,
-			relatedResponse: id,
-			relationshipType: 'dissent'
-		},
-		success: function(data){
-			callback();
-		}
-	})
+function addResponseToDiscussion(newResponseData, isCitation, callback){
+	if (isCitation){
+		$.ajax({
+			type: "POST",
+			url: "../discussions/addCitationToDiscussion",
+			data: {
+				discussionId: currentDiscussionId,
+				citationId: currentResponse,
+				relatedResponse: newResponseData['id'],
+				relationshipType: 'dissent' //replace
+			},
+			success: function(){
+				callback(newResponseData, "citationResponse");
+			}
+		})
+	} else {
+		$.ajax({
+			type: "POST",
+			url: "../../responses",
+			data: {
+				original_discussion: currentDiscussionId,
+				responseTitle: newResponseData['title'],
+				responseText: newResponseData['text'],
+				created_by: "Daniel",
+				relatedResponse: currentResponse,
+				relationshipType: 'dissent' //replace
+			},
+			success: function(newResponse){
+				callback(newResponse, "originalResponse");
+			}
+		})		
+	}
 }
 
 function loadResponseBrowser(){
@@ -76,8 +94,13 @@ function loadResponseBrowser(){
 
 var mouseMovement;
 
-function addNewNode(response){
-	console.log(response)
+function addNewNode(response, responseClass){
+	g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
+	g.setEdge(currentResponse, "n"+response._id, {	
+		style: "fill: none;",
+		arrowhead: 'undirected',
+	});
+	renderGraph(g, render, inner, svg);
 }
 
 function initializeGraph(id, svg, inner, render, g){
@@ -111,15 +134,7 @@ function initializeGraph(id, svg, inner, render, g){
 			
 			if ("n"+idOfClickedResponse !== currentResponse){
 				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
-				addCitationToDiscussion(idOfClickedResponse, function(){
-					$('#responseModal').modal('hide');
-					g.setNode("n"+idOfClickedResponse, { id: "n"+idOfClickedResponse, labelType: 'html', label: compiledResponseTemplate({templateData : {response: clickedResponse, class: "originalResponse", responseTypeColor: "blue"}}), class: "unselected-node"});
-					g.setEdge(currentResponse, "n"+idOfClickedResponse, {	
-						style: "fill: none;",
-						arrowhead: 'undirected',
-					});
-					renderGraph(g, render, inner, svg);	
-				});
+				addResponseToDiscussion(clickedResponse, true, addNewNode());
 			} else {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
 					$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
@@ -138,6 +153,10 @@ function initializeGraph(id, svg, inner, render, g){
 			currentResponse = e.currentTarget.id;
 		})
 
+		$('.submit-reply-button').click(function(e){
+			//How can this work?
+		})
+
 		$('.reply-button').click(function(e){
 			var idOfClickedResponse = $(e.target).closest('.unselected-node').attr('id');
 			g.node(idOfClickedResponse).label += "<div>" + inputTemplate + "</div>";
@@ -152,6 +171,15 @@ function initializeGraph(id, svg, inner, render, g){
 			};
 			fetchResponses(searchQuery);
 		});
+
+		function testFunction(){
+			var newResponse = {};
+			$.each($('#responseForm').serializeArray(), function(i, field){
+				newResponse[field.name] = field.value;
+			});
+			addResponseToDiscussion(newResponse, false, addNewNode())
+		}
+
 	});
 
 }
