@@ -37,8 +37,121 @@ $(document).ready(function() {
 	svg.call(zoom).on("dblclick.zoom", null);
 
 	fetchResponses();
-	initializeGraph(currentDiscussionId ,svg, inner, render, g);
+	initializeGraph(currentDiscussionId, tryDraw);
 	startBloodhound();
+	
+	function tryDraw(responses, discussion){
+		console.log(responses);
+		responses.forEach(function(response){
+			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
+			if (discussion.citations.indexOf(response._id) !== -1){
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
+			} else {
+				response.text = response.text.replace(/(.{80})/g, "$1<br>")
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
+			}
+			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
+				if (relationship.hasOwnProperty(response._id)){
+					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
+						style: "fill: none;",
+						arrowhead: 'undirected',
+						// lineInterpolate: 'basis'
+					});
+				}
+			})
+		});
+		
+		renderGraph();
+		
+		function renderGraph(){
+			g.nodes().forEach(function(v) {
+			  var node = g.node(v);
+			  node.rx = node.ry = 1;
+			});
+
+			g.graph().transition = function(selection) {
+			  return selection.transition().duration(500);
+			};
+
+			// Render the graph into svg g
+			d3.select("svg g").call(render, g);
+
+			inner.selectAll(".node").on('mousedown', function(){
+				if (mouseMovement){
+					textSelected = true;
+					mouseMovement = false;
+				}
+				d3.event.stopPropagation();
+			})
+
+			svg.selectAll(".node").on('mousemove', function(){
+				mouseMovement = true;
+			});
+			
+			$('.cite-response').click(function(e){
+				var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+				var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
+				
+				if ("n"+idOfClickedResponse !== currentResponse){
+					clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
+					addResponseToDiscussion(clickedResponse, true, addNewNode());
+				} else {
+					if($('.alert', '#'+idOfClickedResponse).length !== 1) {
+						$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
+					}
+				}		
+			});
+
+			$('.use-title').click(function(e){
+				var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+				var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
+				$('#responseModal').modal('hide');
+				$('#newResponseTitle').val(clickedResponseTitle);
+			})
+			
+			$('.node').click(function(e){
+				currentResponse = e.currentTarget.id;
+			})
+
+			$('.submit-reply-button').click(function(e){
+				//How can this work?
+			})
+
+			inner.selectAll('.reply-button').on('click',function(e){
+				var idOfClickedResponse = "n"+d3.select(this.parentNode).attr('id');
+				console.log(idOfClickedResponse);
+				//console.log($(e.target).closest('.unselected-node').find('.inputTemplate')).css('display', 'inline-block');
+				//svg.select(".inputTemplate").classed("hiddenthing", false);
+				//svg.select(".inputTemplate").classed("vizzything", true);
+				//console.log(svg.select(".inputTemplate"))
+				//svg.select(".inputTemplate").attr("visibility", "visible");
+				//$(e.target).closest('.unselected-node').find('.inputTemplate').css( "display", "inline-block" );
+				//console.log(g.node(idOfClickedResponse).class);
+				//g.node(idOfClickedResponse).class = "testsex"
+				if (g.node(idOfClickedResponse).label.indexOf('display:none') !== -1){
+					g.node(idOfClickedResponse).label = g.node(idOfClickedResponse).label.replace("display:none","display:inline-block");				
+				} else {
+					g.node(idOfClickedResponse).label = g.node(idOfClickedResponse).label.replace("display:inline-block","display:none");								
+				}
+				renderGraph();
+				
+			});
+			
+			$('#responseBrowserSearchButton').click(function(e) {
+				e.preventDefault();
+				var searchQuery = {
+					title: ($('#responseTitle').val()),
+					text: ($('#responseKeywords').val())
+				};
+				fetchResponses(searchQuery);
+			});
+			
+			$('.inputTemplate').click(function(e){
+				console.log(e);
+			})	
+		}
+		
+	}
 	
 });
 
@@ -103,104 +216,9 @@ function addNewNode(response, responseClass){
 	renderGraph(g, render, inner, svg);
 }
 
-function initializeGraph(id, svg, inner, render, g){
+function initializeGraph(id, cb){
 	d3.json('http://localhost:3000/api/discussions/id/' + id, function(data){
-		responses = data.responses;
-		discussion = data.discussion;
-		responses.forEach(function(response){
-			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
-			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
-			} else {
-				response.text = response.text.replace(/(.{80})/g, "$1<br>")
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
-			}
-			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
-				if (relationship.hasOwnProperty(response._id)){
-					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
-						style: "fill: none;",
-						arrowhead: 'undirected',
-						// lineInterpolate: 'basis'
-					});
-				}
-			})
-		});
-		
-		renderGraph(g, render, inner, svg)
-	
-		$('.cite-response').click(function(e){
-			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
-			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
-			
-			if ("n"+idOfClickedResponse !== currentResponse){
-				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
-				addResponseToDiscussion(clickedResponse, true, addNewNode());
-			} else {
-				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
-					$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
-				}
-			}		
-		});
-
-		$('.use-title').click(function(e){
-			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
-			var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
-			$('#responseModal').modal('hide');
-			$('#newResponseTitle').val(clickedResponseTitle);
-		})
-		
-		$('.node').click(function(e){
-			currentResponse = e.currentTarget.id;
-		})
-
-		$('.submit-reply-button').click(function(e){
-			//How can this work?
-		})
-
-		$('.reply-button').click(function(e){
-			var idOfClickedResponse = $(e.target).closest('.unselected-node').attr('id');
-			g.node(idOfClickedResponse).label += "<div>" + inputTemplate + "</div>";
-			renderGraph(g, render, inner, svg);
-		});
-		
-		$('#responseBrowserSearchButton').click(function(e) {
-			e.preventDefault();
-			var searchQuery = {
-				title: ($('#responseTitle').val()),
-				text: ($('#responseKeywords').val())
-			};
-			fetchResponses(searchQuery);
-		});
-
-		function testFunction(){
-			var newResponse = {};
-			$.each($('#responseForm').serializeArray(), function(i, field){
-				newResponse[field.name] = field.value;
-			});
-			addResponseToDiscussion(newResponse, false, addNewNode())
-		}
-
+		cb(data.responses, data.discussion)
 	});
 
-}
-
-function renderGraph(g, render, inner, svg){
-	g.nodes().forEach(function(v) {
-	  var node = g.node(v);
-	  node.rx = node.ry = 1;
-	});
-
-	render(d3.select("svg g"), g);
-
-	inner.selectAll(".node").on('mousedown', function(id){
-		if (mouseMovement){
-			textSelected = true;
-			mouseMovement = false;
-		}
-		d3.event.stopPropagation();
-	})
-
-	svg.selectAll(".node").on('mousemove', function(){
-		mouseMovement = true;
-	})	
 }

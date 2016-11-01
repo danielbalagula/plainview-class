@@ -21,6 +21,13 @@
   fill: blue;
 }
 
+.testsex {
+	fill: black;
+	font-family: 'Roboto Slab', serif;
+	font-size: 12px;
+	border: blue;
+}
+
 .reply-button {
   font-family: sans-serif;
 }
@@ -30,6 +37,14 @@
   font-family: 'Roboto Slab', serif;
   font-size: 12px;
   border: blue;
+}
+
+.hiddenthing {
+	display: none;
+}
+
+.vizzything {
+	display: inline-block;
 }
 
 .selected-node {

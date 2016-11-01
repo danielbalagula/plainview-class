@@ -15,6 +15,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
+- Currently inputTemplate's 'display' string is being replaced a string that has 'inline-block'... HOW CRAZY IS THAT... but is it the best solution?
 - ~~link a citation instead of writing an argument as a response~~ Completed 10/19/2016
 - implement article data type
 - accept JSON request from client
