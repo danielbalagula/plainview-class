@@ -1,3 +1,3 @@
 module.exports = {
-	'database': 'mongodb://@ds141937.mlab.com:41937/dev',
+	'database': 'mongodb://serverclient:noway123@ds141937.mlab.com:41937/dev',
 }
