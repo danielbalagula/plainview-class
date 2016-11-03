@@ -22,7 +22,9 @@ router.get('/new', function(req, res, next) {
 router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
 	var discussionId = mongoose.Types.ObjectId(req.params.discussion_id.toString());
 	Discussion.findById(discussionId, function (err, foundDiscussion) {
-    Response.find({
+    if (foundDiscussion) {
+    	
+		Response.find({
       '_id': { $in: foundDiscussion.responses}
     }, function (err, foundResponses) { 
       if (req.apiQuery){
@@ -31,7 +33,8 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
         res.render('discussion', {discussionId: discussionId}); 
       }
     })
-	});
+	});	
+    }
 });
 
 router.post('/', function(req, res, next) {
