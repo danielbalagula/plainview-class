@@ -31,19 +31,19 @@ var responseTemplate = `
 		</div>
 		<div class="inputTemplate" style="display:none">
 			<hr style="border: none; height:1px; background-color: black ">
-			<form id="responseForm">
+			<form id="responseForm-<%= templateData.response._id %>">
 				<div id="newResponseTitleDiv" class="form-group row">
 					<div id="suggestedTitles">
 						Response title:
-						<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="responseTitle">
+						<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="title">
 						<button type="button" class="btn btn-outline-secondary btn-sm"  data-toggle="modal" data-target="#responseModal">Browse</button>
 					</div>
 				</div>
 				<div class="form-group row">
-					<textarea rows="10" style="width:90%; border:solid .33px gray; resize: none;"></textarea>
+					<textarea name="text" rows="10" form="responseForm-<%= templateData.response._id %>" style="width:90%; border:solid .33px gray; resize: none;"></textarea>
 				</div>
 				<div class="form-group row">
-					<button type="button" id="test" class="btn btn-sm submit-reply-button">Submit</button>
+					<button type="button" class="btn btn-sm submit-reply-button">Submit</button>
 				</div>
 			</form>
 		</div>

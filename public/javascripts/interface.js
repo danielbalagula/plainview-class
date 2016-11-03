@@ -40,14 +40,42 @@ $(document).ready(function() {
 	initializeGraph(currentDiscussionId, tryDraw);
 	startBloodhound();
 	
+	function initializeGraph(id, cb){
+		d3.json('../../api/discussions/id/' + id, function(data){
+			cb(data.responses, data.discussion)
+		});
+	}
+	
 	function tryDraw(responses, discussion){
+		responses.forEach(function(response){
+			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
+			if (discussion.citations.indexOf(response._id) !== -1){
+				response.text = response.text.replace(/(.{80})/g, "$1<br>")
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node "});
+			} else {
+				response.text = response.text.replace(/(.{80})/g, "$1<br>")
+				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
+			}
+			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
+				if (relationship.hasOwnProperty(response._id)){
+					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
+						style: "fill: none;",
+						arrowhead: 'undirected',
+						// lineInterpolate: 'basis'
+					});
+				}
+			})
+		});
+		
+		console.log(responses, discussion)
+		
 		$('#responses').on('click', '.cite-response', function(e){
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			
 			if ("n"+idOfClickedResponse !== currentResponse){
 				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
-				addResponseToDiscussion(clickedResponse, true, addNewNode(clickedResponse ,"citationResponse"));
+				addResponseToDiscussion(clickedResponse, true, addNewNode);
 				$('#responseModal').modal('hide');
 			} else {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
@@ -72,26 +100,7 @@ $(document).ready(function() {
 			$('#newResponseTitle').val(clickedResponseTitle);
 		})
 		
-		responses.forEach(function(response){
-			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
-			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node citationResponse"});
-			} else {
-				response.text = response.text.replace(/(.{80})/g, "$1<br>")
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
-			}
-			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
-				if (relationship.hasOwnProperty(response._id)){
-					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
-						style: "fill: none;",
-						arrowhead: 'undirected',
-						// lineInterpolate: 'basis'
-					});
-				}
-			})
-		});
-		
-		renderGraph();
+		renderGraph(g);
 		
 		function renderGraph(){
 			g.nodes().forEach(function(v) {
@@ -123,7 +132,13 @@ $(document).ready(function() {
 			})
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
-				//How can this work?
+				var form = d3.select(this.parentNode.parentNode).attr("id");
+				var newResponse = {};
+				$.each($('#'+form).serializeArray(), function(i, field) {
+					newResponse[field.name] = field.value;
+				});
+				console.log(newResponse);
+				addResponseToDiscussion(newResponse, false, addNewNode);
 			})
 
 			svg.selectAll('.reply-button').on('click',function(e){
@@ -157,6 +172,41 @@ $(document).ready(function() {
 		}
 	}
 	
+	function addResponseToDiscussion(newResponseData, isCitation, callback){
+		console.log(newResponseData);
+		if (isCitation){
+			$.ajax({
+				type: "POST",
+				url: "../addCitationToDiscussion",
+				data: {
+					discussionId: currentDiscussionId,
+					citationId: newResponseData['_id'],
+					relatedResponse: currentResponse.substring(1),
+					relationshipType: 'dissent' //replace
+				},
+				success: function(){
+					callback(newResponseData, "citationResponse");
+				}
+			})
+		} else {
+			$.ajax({
+				type: "POST",
+				url: "../../responses",
+				data: {
+					original_discussion: currentDiscussionId,
+					responseTitle: newResponseData['title'],
+					responseText: newResponseData['text'],
+					created_by: "Daniel",
+					relatedResponse: currentResponse,
+					relationshipType: 'dissent' //replace
+				},
+				success: function(newResponse){
+					callback(newResponse, "originalResponse");
+				}
+			})		
+		}
+	}
+	
 });
 
 function fetchResponses(searchQuery){
@@ -171,49 +221,9 @@ function fetchResponses(searchQuery){
 	})
 }
 
-function addResponseToDiscussion(newResponseData, isCitation, callback){
-	if (isCitation){
-		$.ajax({
-			type: "POST",
-			url: "../addCitationToDiscussion",
-			data: {
-				discussionId: currentDiscussionId,
-				citationId: currentResponse,
-				relatedResponse: newResponseData['id'],
-				relationshipType: 'dissent' //replace
-			},
-			success: function(){
-				callback(newResponseData, "citationResponse");
-			}
-		})
-	} else {
-		$.ajax({
-			type: "POST",
-			url: "../../responses",
-			data: {
-				original_discussion: currentDiscussionId,
-				responseTitle: newResponseData['title'],
-				responseText: newResponseData['text'],
-				created_by: "Daniel",
-				relatedResponse: currentResponse,
-				relationshipType: 'dissent' //replace
-			},
-			success: function(newResponse){
-				callback(newResponse, "originalResponse");
-			}
-		})		
-	}
-}
 
 function loadResponseBrowser(){
 	$("#responses").html(responseBrowser({responses: fetchedResponses}));
 }
 
 var mouseMovement;
-
-function initializeGraph(id, cb){
-	d3.json('../../api/discussions/id/' + id, function(data){
-		cb(data.responses, data.discussion)
-	});
-
-}
