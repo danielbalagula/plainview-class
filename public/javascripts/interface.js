@@ -41,7 +41,37 @@ $(document).ready(function() {
 	startBloodhound();
 	
 	function tryDraw(responses, discussion){
-		console.log(responses);
+		$('#responses').on('click', '.cite-response', function(e){
+			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
+			
+			if ("n"+idOfClickedResponse !== currentResponse){
+				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
+				addResponseToDiscussion(clickedResponse, true, addNewNode(clickedResponse ,"citationResponse"));
+				$('#responseModal').modal('hide');
+			} else {
+				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
+					$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
+				}
+			}		
+		});
+		
+		$('#responseBrowserSearchButton').on('click',function(e) {
+			e.preventDefault();
+			var searchQuery = {
+				title: ($('#responseTitle').val()),
+				text: ($('#responseKeywords').val())
+			};
+			fetchResponses(searchQuery);
+		});
+		
+		$('#responses').on('click', '.use-title',function(e){
+			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+			var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
+			$('#responseModal').modal('hide');
+			$('#newResponseTitle').val(clickedResponseTitle);
+		})
+		
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
@@ -76,7 +106,7 @@ $(document).ready(function() {
 			// Render the graph into svg g
 			d3.select("svg g").call(render, g);
 
-			inner.selectAll(".node").on('mousedown', function(){
+			svg.selectAll(".node").on('mousedown', function(){
 				if (mouseMovement){
 					textSelected = true;
 					mouseMovement = false;
@@ -88,36 +118,15 @@ $(document).ready(function() {
 				mouseMovement = true;
 			});
 			
-			$('.cite-response').click(function(e){
-				var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
-				var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
-				
-				if ("n"+idOfClickedResponse !== currentResponse){
-					clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
-					addResponseToDiscussion(clickedResponse, true, addNewNode());
-				} else {
-					if($('.alert', '#'+idOfClickedResponse).length !== 1) {
-						$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
-					}
-				}		
-			});
-
-			$('.use-title').click(function(e){
-				var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
-				var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
-				$('#responseModal').modal('hide');
-				$('#newResponseTitle').val(clickedResponseTitle);
-			})
-			
-			$('.node').click(function(e){
-				currentResponse = e.currentTarget.id;
+			svg.selectAll('.node').on('click',function(e){
+				currentResponse = e;
 			})
 
-			$('.submit-reply-button').click(function(e){
+			svg.selectAll('.submit-reply-button').on('click',function(e){
 				//How can this work?
 			})
 
-			inner.selectAll('.reply-button').on('click',function(e){
+			svg.selectAll('.reply-button').on('click',function(e){
 				var idOfClickedResponse = "n"+d3.select(this.parentNode).attr('id');
 				console.log(idOfClickedResponse);
 				//console.log($(e.target).closest('.unselected-node').find('.inputTemplate')).css('display', 'inline-block');
@@ -134,23 +143,18 @@ $(document).ready(function() {
 					g.node(idOfClickedResponse).label = g.node(idOfClickedResponse).label.replace("display:inline-block","display:none");								
 				}
 				renderGraph();
-				
 			});
-			
-			$('#responseBrowserSearchButton').click(function(e) {
-				e.preventDefault();
-				var searchQuery = {
-					title: ($('#responseTitle').val()),
-					text: ($('#responseKeywords').val())
-				};
-				fetchResponses(searchQuery);
-			});
-			
-			$('.inputTemplate').click(function(e){
-				console.log(e);
-			})	
 		}
 		
+		function addNewNode(response, responseClass){
+			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
+			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
+			g.setEdge(currentResponse, "n"+response._id, {	
+				style: "fill: none;",
+				arrowhead: 'undirected',
+			});
+			renderGraph(g);
+		}
 	}
 	
 });
@@ -171,7 +175,7 @@ function addResponseToDiscussion(newResponseData, isCitation, callback){
 	if (isCitation){
 		$.ajax({
 			type: "POST",
-			url: "../discussions/addCitationToDiscussion",
+			url: "../addCitationToDiscussion",
 			data: {
 				discussionId: currentDiscussionId,
 				citationId: currentResponse,
@@ -206,15 +210,6 @@ function loadResponseBrowser(){
 }
 
 var mouseMovement;
-
-function addNewNode(response, responseClass){
-	g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
-	g.setEdge(currentResponse, "n"+response._id, {	
-		style: "fill: none;",
-		arrowhead: 'undirected',
-	});
-	renderGraph(g, render, inner, svg);
-}
 
 function initializeGraph(id, cb){
 	d3.json('../../api/discussions/id/' + id, function(data){
