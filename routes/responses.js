@@ -93,9 +93,11 @@ router.get('/:response_query', function(req, res, next) {
 router.get('/responseTitles/:response_query', function(req, res, next){
   responseTitle.find({ title : { "$regex": req.params.response_query, "$options": "i" } }, function(err, foundTitles){
     var titles = [];
-    foundTitles.forEach(function(title){
-      titles.push(title.title);
-    })
+    if (titles !=== undefined){
+    	foundTitles.forEach(function(title){
+     		titles.push(title.title);
+   	})
+    }
     console.log(titles);
     res.send(titles);
   })
