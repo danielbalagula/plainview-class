@@ -58,7 +58,7 @@ router.post('/', function(req, res, next) {
 
   newResponse.save(function(err, savedResponse){
       newDiscussion.save(function(err, savedDiscussion) {
-       res.redirect('/discussions/id/' + savedDiscussion.id);
+       res.redirect('/discussions/id/' + newDiscussion._id);
       });
   });
   responseTitle.find({title: req.body.responseTitle}, function(err, foundResponse, num){
