@@ -4,17 +4,25 @@ Operated by: Jordan Coimbra, Daniel Balagula
 
 ##Current Bugs:
 - ~~deselecting highlighted text selects a response node (it shouldn't)~~ Fixed 10/19/2016
-- page doesn't immediately add node to graph when user makes a response (it should)
+- ~~page doesn't immediately add node to graph when user makes a response (it should)~~ Fixed 11/03/2016
 - ~~long words don't wrap around response node (they should)~~ Fixed 10/21/2016
 - ~~typeahead.js suggestion dropdown doesn't show (it should)~~ Fixed 10/20/2016
 - mouse selecting nodes is not as fluid as it could be
 - labels for form info overflow when screen is tight (they shouldn't)
 - ~~edge styles have grey at the ends (they shouldn't)~~ Altered: edge styles don't represent response relationships
 - lines wrap and break in-between words (they shouldn't)
-- line breaks sometimes go beyond node widths (they shouldn't)
+- ~~line breaks sometimes go beyond node widths (they shouldn't)~~ Possibly fixed 11/03/2016
 - ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
+- Add response type options when citing/writing a response
+- Add user accounts and authentication/authorization
+  -Passport local/fb/google
+  -Passport mongoose
+  -Express session
+  -SSL certificate
+- Decide how to structure and limit article citation so that graphs dont' get mixed up
+- Refactor interface.js
 - Currently inputTemplate's 'display' string is being replaced a string that has 'inline-block'... HOW CRAZY IS THAT... but is it the best solution?
 - ~~link a citation instead of writing an argument as a response~~ Completed 10/19/2016
 - implement article data type
@@ -38,12 +46,12 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - figure out best place to put responseTemplate
 - a better way to getting relationship types when drawing nodes
 - ~~Fix adding response when zoomed~~ Completed 10/24/2016
-- redo title finding to make it filter-based and use /responses with req.body.filter to specify titles
+- ~~redo title finding to make it filter-based and use /responses with req.body.filter to specify titles~~ 
 - create a route for popular/featured responses that will show in the responseBrowser (instead of all responses)
-- current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrwoser.. look for better alternatives
+- current implementation of Underscore.js templating for responseBrowser, responseInput, and responseNode are all dubious, especially responseBrowser.. look for better alternatives
 - evaluate whether ajax call for prefetched resposnes should happen before, during, or after initial graph rendering
 - implement responseBrowser auto-search after the user has stopped typing for a few seconds, so they don't have to click "Search"
-- there's no efficient connection between responseBrowser results and using them in the code... currently using grep (inefficient af)
+- there's no efficient connection between responseBrowser results and using them in the code... currently using grep
 
 ##Mottos:
 - Test all possible solutions, no matter how cryptic the code
@@ -51,6 +59,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - Reflect upon all design decisions
 
 ##Questions:
+- Do we want to have transitions in the graph?
 - How would having a slightly grey background look on the graph?
 - Should we implement tags?
 - What font do we want arguments to use?
