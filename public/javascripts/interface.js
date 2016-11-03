@@ -217,7 +217,7 @@ function addNewNode(response, responseClass){
 }
 
 function initializeGraph(id, cb){
-	d3.json('http://localhost:3000/api/discussions/id/' + id, function(data){
+	d3.json('../../api/discussions/id/' + id, function(data){
 		cb(data.responses, data.discussion)
 	});
 
