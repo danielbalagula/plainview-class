@@ -61,6 +61,7 @@ router.post('/', function(req, res, next) {
 
   newResponse.save(function(err, savedResponse){
       newDiscussion.save(function(err, savedDiscussion) {
+	      console.log("SHould get here");
        res.redirect('/discussions/id/' + newDiscussion._id);
       });
   });
