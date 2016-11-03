@@ -21,6 +21,7 @@ router.get('/new', function(req, res, next) {
 
 router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
 	var discussionId = mongoose.Types.ObjectId(req.params.discussion_id.toString());
+	console.log("second time: " + discussionId);
 	Discussion.findById(discussionId, function (err, foundDiscussion) {
     if (foundDiscussion) {
     	
@@ -61,7 +62,7 @@ router.post('/', function(req, res, next) {
 
   newResponse.save(function(err, savedResponse){
       newDiscussion.save(function(err, savedDiscussion) {
-	      console.log("SHould get here");
+	      console.log(newDiscussion._id);
        res.redirect('/discussions/id/' + newDiscussion._id);
       });
   });
