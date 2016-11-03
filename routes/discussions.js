@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
       });
   });
   responseTitle.find({title: req.body.responseTitle}, function(err, foundResponse, num){
-    if (foundResponse.length === 0){
+    if (foundResponse !== undefined && foundResponse.length === 0){
       var newResponseTitle = new responseTitle({
         title: req.body.responseTitle
       });
