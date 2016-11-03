@@ -33,8 +33,8 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
         res.render('discussion', {discussionId: discussionId}); 
       }
     })
-	});	
     }
+	});	
 });
 
 router.post('/', function(req, res, next) {
