@@ -61,7 +61,7 @@ $(document).ready(function() {
 					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
 						style: "fill: none;",
 						arrowhead: 'undirected',
-						lineInterpolate: 'basis'
+						//lineInterpolate: 'basis'
 					});
 				}
 			})
@@ -158,13 +158,20 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, responseClass){
+			showAlert();
+			$(document).trigger("add-alerts", [
+			    {
+			      'message': "This is a warning.",
+			      'priority': 'warning'
+			    }
+			  ]);
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge(currentResponse, "n"+response._id, {	
 				style: "fill: none;",
 				arrowhead: 'undirected',
 			});
-			renderGraph(g);
+			renderGraph();
 		}
 	}
 	
@@ -203,6 +210,28 @@ $(document).ready(function() {
 	}
 	
 });
+
+function showAlert(){
+	$.notify({
+		message: 'Success</br>Replied to conversation',
+		icon: 'glyphicon glyphicon-ok',
+	},{
+		allow_dismiss: false,
+		position: "absolute",
+		element: '#interface',
+		type: 'success',
+			placement: {
+			from: "bottom",
+			align: "left"
+		},
+		animate: {
+			enter: 'animated fadeInUp',
+			exit: 'animated fadeOutDown'
+		},
+		delay: 2000,
+		timer: 1000,
+	});
+}
 
 function fetchResponses(searchQuery){
 	$.ajax({
