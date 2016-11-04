@@ -131,6 +131,8 @@ $(document).ready(function() {
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
 				var form = d3.select(this.parentNode.parentNode).attr("id");
+				var id = "n"+form.substring(form.indexOf("-")+1, form.length);
+				switchReplyView(id); //this closes the reply button without checking if the reply actually got registered by the server
 				var newResponse = {};
 				$.each($('#'+form).serializeArray(), function(i, field) {
 					newResponse[field.name] = field.value;
@@ -148,23 +150,13 @@ $(document).ready(function() {
 				//$(e.target).closest('.unselected-node').find('.inputTemplate').css( "display", "inline-block" );
 				//console.log(g.node(idOfClickedResponse).class);
 				//g.node(idOfClickedResponse).class = "testsex"
-				if (g.node(idOfClickedResponse).label.indexOf('display:none') !== -1){
-					g.node(idOfClickedResponse).label = g.node(idOfClickedResponse).label.replace("display:none","display:inline-block");				
-				} else {
-					g.node(idOfClickedResponse).label = g.node(idOfClickedResponse).label.replace("display:inline-block","display:none");								
-				}
+				switchReplyView(idOfClickedResponse);
 				renderGraph();
 			});
 		}
 		
 		function addNewNode(response, responseClass){
-			showAlert();
-			$(document).trigger("add-alerts", [
-			    {
-			      'message': "This is a warning.",
-			      'priority': 'warning'
-			    }
-			  ]);
+			showAlert(responseClass);
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge(currentResponse, "n"+response._id, {	
@@ -172,6 +164,14 @@ $(document).ready(function() {
 				arrowhead: 'undirected',
 			});
 			renderGraph();
+		}
+
+		function switchReplyView(id){
+		if (g.node(id).label.indexOf('display:none') !== -1){
+				g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
+			} else {
+				g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");								
+			}
 		}
 	}
 	
@@ -211,15 +211,25 @@ $(document).ready(function() {
 	
 });
 
-function showAlert(){
+function showAlert(responseClass){
+	console.log(responseClass);
+	var type;
+	var message;
+	if (responseClass === "originalResponse"){
+		type = "success";
+		message = "Success</br>Replied to conversation"
+	} else {
+		type = "info";
+		message = "Success</br>Added a citation"
+	}
 	$.notify({
-		message: 'Success</br>Replied to conversation',
+		message: message,
 		icon: 'glyphicon glyphicon-ok',
 	},{
 		allow_dismiss: false,
 		position: "absolute",
 		element: '#interface',
-		type: 'success',
+		type: type,
 			placement: {
 			from: "bottom",
 			align: "left"
