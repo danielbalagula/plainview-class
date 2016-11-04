@@ -23,7 +23,14 @@ var responseTemplate = `
 	<div>
 		<div class="<%= templateData.class %>" id="<%= templateData.response._id %>" data-params=<%= templateData.jsonData %>>
 			<span class ="control glyphicon glyphicon-pawn test" style="color:<%= templateData.responseTypeColor %>"></span>
-			<span class="pull-right"><a href="../../responses/id/<%= templateData.response._id %>"><i><%= templateData.response._id %></i></a></span>
+			<span class="pull-right">
+				 <select>
+				  <option value="volvo">Make</option>
+				  <option value="saab">America</option>
+				  <option value="mercedes">Great</option>
+				  <option value="audi">Again</option>
+				</select>
+			</span>
 			<span> <%= templateData.response.created_by %></span>
 			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
 			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
