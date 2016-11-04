@@ -40,11 +40,9 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-    console.log("this works at all")
   var query = getRegexFields(req.query);
   Response.find(query, function(err, foundResponses){
     if (req.apiQuery){
-      console.log(foundResponses);
       res.json(foundResponses);
     } else {
       res.render('responses', {responses: foundResponses});
@@ -68,7 +66,6 @@ router.get('/new', function(req, res, next) {
 });
 
 router.get('/id/:response_id([0-9a-f]{24})', function(req, res, next) {
-	console.log(typeof req.params.response_id)
 	var responseId = mongoose.Types.ObjectId(req.params.response_id.toString());
 	Response.findById(responseId, function (err, foundResponse) {
     if (req.apiQuery){
@@ -81,7 +78,6 @@ router.get('/id/:response_id([0-9a-f]{24})', function(req, res, next) {
 
 router.get('/:response_query', function(req, res, next) {
 	Response.find({title: req.params.response_query}, function (err, foundResponses) {
-    console.log(foundResponses);
 	  if (req.apiQuery){
       res.json({responses: foundResponses});
     } else {
@@ -98,7 +94,6 @@ router.get('/responseTitles/:response_query', function(req, res, next){
      		titles.push(title.title);
    	})
     }
-    console.log(titles);
     res.send(titles);
   })
 })
@@ -118,7 +113,6 @@ function validResponse(response){
 }
 
 function getRegexFields(query){
-    console.log("got here");
   for (var field in query) {
     if (query.hasOwnProperty(field)) {
         query[field] = new RegExp(query[field], 'i')

@@ -15,6 +15,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
+- Serve favicon!!
 - Add response type options when citing/writing a response
 - Add user accounts and authentication/authorization
   -Passport local/fb/google
