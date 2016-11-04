@@ -40,6 +40,11 @@ $(document).ready(function() {
 	initializeGraph(currentDiscussionId, tryDraw);
 	startBloodhound();
 	
+	var clipboard = new Clipboard('.urlButton');
+	clipboard.on('success', function(e) {
+		notify("info", "Copied response id to clipboard!", "glyphicon glyphicon-link")
+	});
+
 	function initializeGraph(id, cb){
 		d3.json('../../api/discussions/id/' + id, function(data){
 			cb(data.responses, data.discussion)
@@ -49,11 +54,10 @@ $(document).ready(function() {
 	function tryDraw(responses, discussion){
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
+			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			if (discussion.citations.indexOf(response._id) !== -1){
-				response.text = response.text.replace(/(.{80})/g, "$1<br>");
 				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node "});
 			} else {
-				response.text = response.text.replace(/(.{80})/g, "$1<br>");
 				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
 			}
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
@@ -79,7 +83,8 @@ $(document).ready(function() {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
 					$(e.target).closest('.thumbnail').append( "<div class='alert alert-warning'>Can't cite a response to itself</div>" );
 				}
-			}		
+			}	
+			switchReplyView(currentResponse);	
 		});
 		
 		$('#responseBrowserSearchButton').on('click',function(e) {
@@ -127,6 +132,7 @@ $(document).ready(function() {
 			
 			svg.selectAll('.node').on('click',function(e){
 				currentResponse = e;
+				console.log(e)
 			})
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
@@ -156,7 +162,7 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, responseClass){
-			showAlert(responseClass);
+			notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge(currentResponse, "n"+response._id, {	
@@ -167,12 +173,12 @@ $(document).ready(function() {
 		}
 
 		function switchReplyView(id){
-		if (g.node(id).label.indexOf('display:none') !== -1){
-				g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
-			} else {
-				g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");								
+			if (g.node(id).label.indexOf('display:none') !== -1){
+					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
+				} else {
+					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");								
+				}
 			}
-		}
 	}
 	
 	function addResponseToDiscussion(newResponseData, isCitation, callback){
@@ -188,6 +194,9 @@ $(document).ready(function() {
 				},
 				success: function(){
 					callback(newResponseData, "citationResponse");
+				},
+				error: function(err){
+					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
 				}
 			})
 		} else {
@@ -204,6 +213,9 @@ $(document).ready(function() {
 				},
 				success: function(newResponse){
 					callback(newResponse, "originalResponse");
+				},
+				error: function(err){
+					replyFailAlert();
 				}
 			})		
 		}
@@ -211,20 +223,10 @@ $(document).ready(function() {
 	
 });
 
-function showAlert(responseClass){
-	console.log(responseClass);
-	var type;
-	var message;
-	if (responseClass === "originalResponse"){
-		type = "success";
-		message = "Success</br>Replied to conversation"
-	} else {
-		type = "info";
-		message = "Success</br>Added a citation"
-	}
+function notify(type, message, gylph){
 	$.notify({
 		message: message,
-		icon: 'glyphicon glyphicon-ok',
+		icon: gylph,
 	},{
 		allow_dismiss: false,
 		position: "absolute",

@@ -39,13 +39,13 @@
   border: blue;
 }
 
-.hiddenthing {
+/*.hiddenthing {
 	display: none;
 }
 
 .vizzything {
 	display: inline-block;
-}
+}*/
 
 .selected-node {
   fill: black;
@@ -68,6 +68,7 @@
   text-align: left;
   line-height: 150%;
   fill: black;
+  word-wrap: break-word;
 }
 
 .inputTemplate {
@@ -81,7 +82,6 @@
   max-width: 400px;
   text-align: left;
   line-height: 150%;
-
 }
 
 .responseTitle {
@@ -92,46 +92,6 @@
 
 .tabrow {
   position: relative;
-}
-
-ul.tab {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-/* Float the list items side by side */
-ul.tab li {float: left;}
-
-/* Style the links inside the list items */
-ul.tab li a {
-    display: inline-block;
-    color: black;
-    text-align: center;
-    border-right: solid;
-    border-left: solid;
-    border-top: solid;
-    border-width: 1px;
-    border-color: grey;
-    padding: 6px;
-    margin: 2px;
-    text-decoration: none;
-    transition: 0.3s;
-    font-size: 12px;
-}
-
-/* Change background color of links on hover */
-ul.tab li a:hover {background-color: #ddd;}
-
-/* Create an active/current tablink class */
-ul.tab li a:focus, .active {background-color: #ccc;}
-
-/* Style the tab content */
-.tabcontent {
-    display: none;
-    border: 1px solid #ccc;
-    border-top: none;
 }
 
 #graphContainer {

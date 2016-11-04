@@ -22,18 +22,13 @@ var responseBrowser = _.template(responseBrowserTemplate);
 var responseTemplate = `
 	<div>
 		<div class="<%= templateData.class %>" id="<%= templateData.response._id %>" data-params=<%= templateData.jsonData %>>
-			<span class ="control glyphicon glyphicon-pawn test" style="color:<%= templateData.responseTypeColor %>"></span>
+			<span class ="control glyphicon glyphicon-pawn urlButton" style="color:<%= templateData.responseTypeColor %>"></span>
 			<span class="pull-right">
-				 <select>
-				  <option value="volvo">Make</option>
-				  <option value="saab">America</option>
-				  <option value="mercedes">Great</option>
-				  <option value="audi">Again</option>
-				</select>
+				<span data-toggle="tooltip" title="Copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
 			</span>
 			<span> <%= templateData.response.created_by %></span>
-			<h3 class="templateData.response.responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
-			<p class="templateData.response.responseText"><%= templateData.response.text %></p>
+			<h3 class="responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
+			<div class="responseText"><%= templateData.response.text %></div>
 			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
 		<div class="inputTemplate" style="display:none">
