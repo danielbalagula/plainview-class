@@ -8,10 +8,16 @@
 	
 	{{#each responses}}
 	  <div class="col-sm-6 col-md-4">
-	    <div class="thumbnail">
+	    <div class="thumbnail responseTile">
 	      <div class="caption">
-	        <span class="pull-right"> <font size=2 color='grey'><i><a href="/responses/id/{{this.id}}">{{this.id}}</a></i></font></span>
-	       	<h5><b>{{this.title}}</b></h5>
+			<div class="pull-right dropdown">
+			    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyphicon glyphicon-option-vertical responseTileDropdown"></span></a>
+			    <ul class="dropdown-menu dropdown-menu-right">
+			        <li><a href="../discussions/id/{{this.original_discussion}}">Go to original discussion</a></li>
+			        <li><a href="">Copy reference id</a></li>
+			    </ul>
+			</div>
+	       	<h5 class="responseSampleTitle"><b>{{this.title}}</b></h5>
 	        </br>
 	        <div class="responseSampleThumbnail">{{this.text}}</div>
 	      </div>
