@@ -23,6 +23,9 @@ $(document).ready(function() {
 	
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
 
+	var socket = io();
+	socket.emit('viewingDiscussion', currentDiscussionId);
+
 	var g = new dagreD3.graphlib.Graph()
 		.setGraph({})
 		.setDefaultEdgeLabel(function() { return {}; });
@@ -71,6 +74,10 @@ $(document).ready(function() {
 				}
 			})
 		});
+
+		socket.on('newOriginalResponse', function(data){
+			addNewNode(data.newResponse, data.relatedResponse, "originalResponse");
+		})
 				
 		$('#responses').on('click', '.cite-response', function(e){
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
@@ -108,6 +115,7 @@ $(document).ready(function() {
 		
 		function renderGraph(){
 			g.nodes().forEach(function(v) {
+				console.log(v)
 			  var node = g.node(v);
 			  node.rx = node.ry = 1;
 			});
@@ -133,7 +141,6 @@ $(document).ready(function() {
 			
 			svg.selectAll('.node').on('click',function(e){
 				currentResponse = e;
-				console.log(e)
 			})
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
@@ -162,12 +169,12 @@ $(document).ready(function() {
 			});
 		}
 		
-		function addNewNode(response, responseClass){
-			notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+		function addNewNode(response, relatedResponse, responseClass){
+			console.log(response)
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
-			g.setEdge(currentResponse, "n"+response._id, {	
+			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;",
 				arrowhead: 'undirected',
 			});
@@ -183,7 +190,7 @@ $(document).ready(function() {
 			}
 	}
 	
-	function addResponseToDiscussion(newResponseData, isCitation, callback){
+	function addResponseToDiscussion(newResponseData, isCitation){
 		if (isCitation){
 			$.ajax({
 				type: "POST",
@@ -195,7 +202,7 @@ $(document).ready(function() {
 					relationshipType: 'dissent' //replace
 				},
 				success: function(){
-					callback(newResponseData, "citationResponse");
+					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
 				},
 				error: function(err){
 					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
@@ -214,10 +221,10 @@ $(document).ready(function() {
 					relationshipType: 'dissent' //replace
 				},
 				success: function(newResponse){
-					callback(newResponse, "originalResponse");
+					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
 				},
 				error: function(err){
-					replyFailAlert();
+					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
 				}
 			})		
 		}

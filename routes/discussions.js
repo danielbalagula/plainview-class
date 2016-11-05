@@ -24,16 +24,15 @@ router.get('/id/:discussion_id([0-9a-f]{24})', function(req, res, next) {
 	console.log("second time: " + discussionId);
 	Discussion.findById(discussionId, function (err, foundDiscussion) {
     if (foundDiscussion) {
-    	
 		Response.find({
-      '_id': { $in: foundDiscussion.responses}
-    }, function (err, foundResponses) { 
-      if (req.apiQuery){
-        res.json({discussion: foundDiscussion, responses: foundResponses});
-      } else {
-        res.render('discussion', {discussionId: discussionId}); 
-      }
-    })
+        '_id': { $in: foundDiscussion.responses}
+      }, function (err, foundResponses) {
+        if (req.apiQuery){
+          res.json({discussion: foundDiscussion, responses: foundResponses});
+        } else {
+          res.render('discussion', {discussionId: discussionId});
+        }
+      })
     }
 	});	
 });

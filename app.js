@@ -1,6 +1,10 @@
 var config = require('./config');
 
 var express = require('express');
+var app = express();
+var socket_io = require( "socket.io" );
+var io = socket_io();
+app.io = io;
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -17,12 +21,14 @@ var tags = require('./routes/tags');
 
 var Response = require('./models/response');
 
-var app = express();
+discussionClients = {};
+
 mongoose.connect(config.database);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+app.set('socketio', io);
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -72,6 +78,16 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
+});
+
+io.on( "connection", function( socket ) {
+  socket.on("viewingDiscussion", function(id){
+    if (discussionClients[id] === undefined){
+      discussionClients[id] = [socket.id];
+    } else {
+      discussionClients[id].push(socket.id);
+    }
+  })
 });
 
 

@@ -17,6 +17,7 @@ router.post('/', function(req, res, next) {
     });
   newResponse.save(function(err, savedResponse){
     var relationship = {}
+    var io = req.app.get('socketio');
     relationship[savedResponse.id] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
     Discussion.findByIdAndUpdate(currentDiscussionId,
       {$push: {"responses": savedResponse.id, "relationships": relationship }},
@@ -25,7 +26,11 @@ router.post('/', function(req, res, next) {
         if (req.apiQuery){
           res.redirect('api/discussions/id/' + currentDiscussionId);
         } else {
-          res.json(savedResponse);
+            if (discussionClients[currentDiscussionId] !== undefined){
+                discussionClients[currentDiscussionId].forEach(function(clientId){
+                    io.to(clientId).emit('newOriginalResponse', {discussionId: currentDiscussionId, newResponse: newResponse, relatedResponse: req.body.relatedResponse});
+                })
+            }
         }
       });
     });
