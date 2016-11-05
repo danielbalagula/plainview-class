@@ -3,6 +3,14 @@
   font-size: 18px;
 }*/
 
+.list-group-item{
+    border-left: 0 none;
+    border-right: 0 none;
+    border-bottom: 0 none;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
 #infoPanelHeading {
   word-wrap: break-word;
   word-break: break-all;
@@ -61,9 +69,9 @@
 }
 
 #logo {
-  padding-bottom: 20px;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding-bottom: 17px;
+  padding-top: 13px;
+  padding-left: 10px;
   display: inline-block
 }
 

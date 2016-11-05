@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Plainview</title>
-     <link rel='stylesheet' href='/stylesheets/style.css' />
      <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+      <link rel='stylesheet' href='/stylesheets/style.css' />
       <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:100" rel="stylesheet">
      <script src="/javascripts/jquery-3.1.1.js"></script>
      <script src="/javascripts/typeahead.bundle.js"></script>
@@ -20,28 +20,34 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/"><img src="/images/logo.png" alt="Dispute Bills"></a>
+        <a class="navbar-brand" href="/"><img id="logo" src="/images/logo.png" alt="Dispute Bills"></a>
       </div>
       <div id="navbar1" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
           <li class="active">
             <form class="navbar-form navbar-left">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search arguments">
+                <input type="text" class="form-control" style="height:30px;" placeholder="Search Plainview">
               </div>
-              <button type="submit" class="btn btn-default">Search</button>
             </form>
           </li>
         </ul>
          <ul class="nav navbar-nav navbar-right">
           <li><a href="#"><span class="glyphicon glyphicon-user"></a></li>
-          <li><a href="/about">About</a></li>
+          <li><a href="/about">about</a></li>
         </ul>
       </div>
       <!--/.nav-collapse -->
     </div>
     <!--/.container-fluid -->
   </nav>
+  <div class="container">
+      <div class="pull-right">
+          <div class="btn-toolbar" role="group" aria-label="...">
+              <a class="btn btn-primary" href="/discussions/new" role="button">Start a discussion</a>
+          </div>
+      </div>
+</div>
     {{{body}}}
   </body>
 </html>

@@ -1,18 +1,12 @@
 
-<div class="container">  
-	<div class="pull-right">   
-		<div class="btn-toolbar" role="group" aria-label="...">
-		<a class="btn btn-primary" href="/tags" role="button">Tags</a>
-		<a class="btn btn-primary" href="/users" role="button">Users</a>
-		<a class="btn btn-primary" href="/discussions/new" role="button">Start a discussion</a>
-		</div>
-	</div>
-	<h3>Top arguments today</h3>
-	<div class="list-group">
-	  <button type="button" class="list-group-item">Cras justo odio</button>
-	  <button type="button" class="list-group-item">Dapibus ac facilisis in</button>
-	  <button type="button" class="list-group-item">Morbi leo risus</button>
-	  <button type="button" class="list-group-item">Porta ac consectetur ac</button>
-	  <button type="button" class="list-group-item">Vestibulum at eros</button>
-	</div>
+<div class="container">
+	<h3>Top Responses</h3>
+    <div class="list-group">
+    {{#each discussions}}
+        <a href="#" class="list-group-item list-group-item-action">
+            <h5 class="list-group-item-heading">Title</h5>
+            <p class="list-group-item-text">Body</p>
+        </a>
+    {{/each}}
+    </div>
 </div>
