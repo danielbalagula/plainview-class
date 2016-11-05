@@ -55,6 +55,7 @@ $(document).ready(function() {
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
+			response.title = response.text.replace(/(.{30})/g, "$1<br>");
 			if (discussion.citations.indexOf(response._id) !== -1){
 				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node "});
 			} else {
@@ -164,6 +165,7 @@ $(document).ready(function() {
 		function addNewNode(response, responseClass){
 			notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
+			response.title = response.text.replace(/(.{30})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge(currentResponse, "n"+response._id, {	
 				style: "fill: none;",
