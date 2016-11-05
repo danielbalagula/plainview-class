@@ -24,7 +24,7 @@ var responseTemplate = `
 		<div class="<%= templateData.class %>" id="<%= templateData.response._id %>" data-params=<%= templateData.jsonData %>>
 			<span class ="control glyphicon glyphicon-pawn urlButton" style="color:<%= templateData.responseTypeColor %>"></span>
 			<span class="pull-right">
-				<span data-toggle="tooltip" title="Copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
+				<span data-toggle="tooltip" data-placement="top" title="Copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
 			</span>
 			<span> <%= templateData.response.created_by %></span>
 			<h3 class="responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h3>
