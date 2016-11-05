@@ -3,6 +3,13 @@
   font-size: 18px;
 }*/
 
+#front-search {
+  width: 100%;
+  height: 50px;
+  font-size: 24px;
+  padding-left: 6px;
+}
+
 .list-group-item{
     border-left: 0 none;
     border-right: 0 none;
