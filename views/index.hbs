@@ -36,8 +36,9 @@
 			<div class="pull-right dropdown">
 			    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span class="glyphicon glyphicon-option-vertical responseTileDropdown"></span></a>
 			    <ul class="dropdown-menu dropdown-menu-right">
+			        <li><a href="../responses/id/{{this._id}}">View information</a></li>
+			        <li class="clipboardDropdown" data-clipboard-text="{{this._id}}" style="cursor: hand"><a>Copy reference id</a></li>
 			        <li><a href="../discussions/id/{{this.original_discussion}}">Go to original discussion</a></li>
-			        <li><a href="">Copy reference id</a></li>
 			    </ul>
 			</div>
 	       	<h5 class="responseSampleTitle"><b>{{this.title}}</b></h5>

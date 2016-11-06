@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	
+	var clipboard = new Clipboard('.clipboardDropdown');
+
 	$(function () {
 	  $('[data-toggle="tooltip"]').tooltip()
 	})

@@ -60,9 +60,9 @@ $(document).ready(function() {
 			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node "});
+				g.setNode("n"+response._id, { style: "fill: ", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
-				g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: responseColors[relationshipType]}}), class: "unselected-node"});
+				g.setNode("n"+response._id, { style: "fill: ", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			}
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 				if (relationship.hasOwnProperty(response._id)){
@@ -118,7 +118,7 @@ $(document).ready(function() {
 		function renderGraph(){
 			g.nodes().forEach(function(v) {
 			  var node = g.node(v);
-			  node.rx = node.ry = 1;
+			  node.rx = node.ry = 3;
 			});
 
 			g.graph().transition = function(selection) {
