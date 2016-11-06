@@ -31,6 +31,7 @@ router.post('/', function(req, res, next) {
                     io.to(clientId).emit('newOriginalResponse', {discussionId: currentDiscussionId, newResponse: newResponse, relatedResponse: req.body.relatedResponse});
                 })
             }
+            res.send('OK')
         }
       });
     });

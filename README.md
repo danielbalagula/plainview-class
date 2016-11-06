@@ -15,6 +15,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
+- Figure out how to mark when someone left a debateExerience server-side. Or just clear when they disconnect? What is the best way?
 - POSTs need time in-between attempts so that server doesn't get ddosed/overloaded
 - Reply div closes without checking if the AJAX request was succressful or not... people would lose data. Find out how to structure this well
 - ~~Serve favicon!!~~ Completed 11/03/2016

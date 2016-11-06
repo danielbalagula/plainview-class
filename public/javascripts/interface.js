@@ -78,11 +78,13 @@ $(document).ready(function() {
 		socket.on('newOriginalResponse', function(data){
 			addNewNode(data.newResponse, data.relatedResponse, "originalResponse");
 		})
+		socket.on('newCitationResponse', function(data){
+			addNewNode(data.citation, data.relatedResponse, "citationResponse");
+		})
 				
 		$('#responses').on('click', '.cite-response', function(e){
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
-			
 			if ("n"+idOfClickedResponse !== currentResponse){
 				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
 				addResponseToDiscussion(clickedResponse, true, addNewNode);
@@ -115,7 +117,6 @@ $(document).ready(function() {
 		
 		function renderGraph(){
 			g.nodes().forEach(function(v) {
-				console.log(v)
 			  var node = g.node(v);
 			  node.rx = node.ry = 1;
 			});
@@ -191,13 +192,14 @@ $(document).ready(function() {
 	}
 	
 	function addResponseToDiscussion(newResponseData, isCitation){
+		console.log(newResponseData)
 		if (isCitation){
 			$.ajax({
 				type: "POST",
 				url: "../addCitationToDiscussion",
 				data: {
 					discussionId: currentDiscussionId,
-					citationId: newResponseData['_id'],
+					citation: JSON.stringify(newResponseData),
 					relatedResponse: currentResponse.substring(1),
 					relationshipType: 'dissent' //replace
 				},

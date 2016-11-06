@@ -76,14 +76,19 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/addCitationToDiscussion', function(req, res, next){
-  console.log(req.body);
+  var citation = JSON.parse(req.body.citation)
+  var io = req.app.get('socketio');
   var relationship = {}
-  relationship[req.body.citationId] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
+  relationship[citation._id] = {relatedResponse: req.body.relatedResponse, relationshipType: req.body.relationshipType};
   Discussion.findByIdAndUpdate(req.body.discussionId,
-    {$push: {"responses": req.body.citationId, "relationships": relationship, "citations": req.body.citationId}},
+    {$push: {"responses": citation._id, "relationships": relationship, "citations": citation._id}},
     {safe: true, upsert: true},
     function (err, foundDiscussion) {
-        res.redirect('/discussions/id/' + req.body.discussionId);
+        if (discussionClients[req.body.discussionId] !== undefined){
+            discussionClients[req.body.discussionId].forEach(function(clientId){
+                io.to(clientId).emit('newCitationResponse', {discussionId: req.body.discussionId, citation: citation, relatedResponse: req.body.relatedResponse});
+            })
+        }
     });
 })
 
