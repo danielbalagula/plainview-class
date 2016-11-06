@@ -29,7 +29,7 @@ var responseTemplate = `
 			<span> <%= templateData.response.created_by %></span>
 			<h5 class="responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h5>
 			<div class="responseText"><%= templateData.response.text %></div>
-			<button type="button" class="btn btn-link btn-sm reply-button">Reply</button>
+			<button type="button" style="font-size: 10px; text-decoration: none;" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
 		<div class="inputTemplate" style="display:none">
 			<hr style="border: none; height:1px; background-color: black ">
