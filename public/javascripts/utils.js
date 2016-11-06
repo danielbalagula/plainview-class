@@ -3,7 +3,9 @@ $(document).ready(function(){
 	var clipboard = new Clipboard('.clipboardDropdown');
 
 	$(function () {
-	  $('[data-toggle="tooltip"]').tooltip()
+		$('[data-toggle="tooltip"]').tooltip({
+			show: { effect: "blind", duration: 800 }
+		})
 	})
 	var jumboHeight = $('.jumbotron').outerHeight();
 	function parallax(){

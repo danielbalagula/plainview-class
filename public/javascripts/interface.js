@@ -57,7 +57,6 @@ $(document).ready(function() {
 	function tryDraw(responses, discussion){
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
-			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			if (discussion.citations.indexOf(response._id) !== -1){
 				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
@@ -67,7 +66,7 @@ $(document).ready(function() {
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 				if (relationship.hasOwnProperty(response._id)){
 					g.setEdge("n"+relationship[response._id]["relatedResponse"], "n"+response._id, {
-						style: "fill: none;stroke: grey; stroke-width: 0.5px; stroke-dasharray: 5, 5;",
+						style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 						arrowhead: 'undirected',
 						//lineInterpolate: 'basis'
 					});
@@ -86,7 +85,6 @@ $(document).ready(function() {
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			if ("n"+idOfClickedResponse !== currentResponse){
-				clickedResponse.text = clickedResponse.text.replace(/(.{80})/g, "$1<br>")
 				addResponseToDiscussion(clickedResponse, true, addNewNode);
 				$('#responseModal').modal('hide');
 			} else {
@@ -112,10 +110,11 @@ $(document).ready(function() {
 			$('#responseModal').modal('hide');
 			$('#newResponseTitle').val(clickedResponseTitle);
 		})
-		
+
 		renderGraph(g);
 		
 		function renderGraph(){
+
 			g.nodes().forEach(function(v) {
 			  var node = g.node(v);
 			  node.rx = node.ry = 3;
@@ -127,6 +126,8 @@ $(document).ready(function() {
 
 			// Render the graph into svg g
 			d3.select("svg g").call(render, g);
+
+			autosize(svg.selectAll("textarea"));
 
 			svg.selectAll(".node").on('mousedown', function(){
 				if (mouseMovement){
@@ -142,6 +143,10 @@ $(document).ready(function() {
 			
 			svg.selectAll('.node').on('click',function(e){
 				currentResponse = e;
+			})
+
+			svg.selectAll('.ta').on('click',function(e){
+				console.log('123')
 			})
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
@@ -172,7 +177,6 @@ $(document).ready(function() {
 		
 		function addNewNode(response, relatedResponse, responseClass){
 			console.log(response)
-			response.text = response.text.replace(/(.{80})/g, "$1<br>");
 			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {

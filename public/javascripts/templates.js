@@ -24,12 +24,15 @@ var responseTemplate = `
 		<div class="<%= templateData.class %>" id="<%= templateData.response._id %>" data-params=<%= templateData.jsonData %>>
 <!-- 			<span class ="control glyphicon glyphicon-pawn urlButton" style="color:<%= templateData.responseTypeColor %>"></span>
  -->			<span class="pull-right">
-				<span data-toggle="tooltip" data-placement="top" title="Copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
+				<span data-toggle="tooltip" data-placement="top" title="copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
 			</span>
-			<span> <%= templateData.response.created_by %></span>
-			<h5 class="responseTitle"><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h5>
-			<div class="responseText"><%= templateData.response.text %></div>
-			<button type="button" style="font-size: 10px; text-decoration: none;" class="btn btn-link btn-sm reply-button">Reply</button>
+			<span style="color: #353535; font-weight: 100; font-family: Impact, Charcoal, sans-serif"> <%= templateData.response.created_by %></span>
+			<h5 data-toggle="tooltip" data-placement="top" title="see more responses like this" class="responseTitle" style="font-size: 13px; font-weight: 300; text-decoration: none;" ><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h5>
+			<div class="responseText" style="color: #353535">
+				<textarea class="ta" rows=5 cols="50" style="width: 100%; border: none; background: white; resize: none;" disabled="true"><%= templateData.response.text %>
+				</textarea>
+			</div>
+			<button type="button" style="font-size: 8px; text-decoration: none;" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
 		<div class="inputTemplate" style="display:none">
 			<hr style="border: none; height:1px; background-color: black ">
@@ -42,7 +45,7 @@ var responseTemplate = `
 					</div>
 				</div>
 				<div class="form-group row">
-					<textarea name="text" rows="10" form="responseForm-<%= templateData.response._id %>" style="width:90%; border:solid .33px gray; resize: none;"></textarea>
+					<textarea name="text" rows="10" form="responseForm-<%= templateData.response._id %>" style="width:90%; border:solid .01px gray; resize: none;"></textarea>
 				</div>
 				<div class="form-group row">
 					<button type="button" class="btn btn-sm submit-reply-button">Submit</button>
