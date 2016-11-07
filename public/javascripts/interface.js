@@ -57,7 +57,6 @@ $(document).ready(function() {
 	function tryDraw(responses, discussion){
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
-			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			if (discussion.citations.indexOf(response._id) !== -1){
 				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
@@ -145,10 +144,6 @@ $(document).ready(function() {
 				currentResponse = e;
 			})
 
-			svg.selectAll('.ta').on('click',function(e){
-				console.log('123')
-			})
-
 			svg.selectAll('.submit-reply-button').on('click',function(e){
 				var form = d3.select(this.parentNode.parentNode).attr("id");
 				var id = "n"+form.substring(form.indexOf("-")+1, form.length);
@@ -177,7 +172,6 @@ $(document).ready(function() {
 		
 		function addNewNode(response, relatedResponse, responseClass){
 			console.log(response)
-			response.title = response.title.replace(/(.{30})/g, "$1<br>");
 			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;",

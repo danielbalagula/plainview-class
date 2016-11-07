@@ -27,10 +27,9 @@ var responseTemplate = `
 				<span data-toggle="tooltip" data-placement="top" title="copy id to clipboard" style="cursor: pointer;" class ="urlButton control glyphicon glyphicon-link" data-clipboard-text="<%= templateData.response._id %>"></span>
 			</span>
 			<span style="color: #353535; font-weight: 100; font-family: 'Open Sans', sans-serif;"> <%= templateData.response.created_by %></span>
-			<h5 data-toggle="tooltip" data-placement="top" title="see more responses like this" class="responseTitle" style="font-size: 13px; font-weight: 300; text-decoration: none;" ><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h5>
-			<div class="responseText" style="color: #353535">
-				<textarea class="ta" rows=5 cols="50" style="width: 100%; border: none; background: white; resize: none;" readonly="true"><%= templateData.response.text %>
-				</textarea>
+			<h5 data-toggle="tooltip" data-placement="top" title="see more responses like this" class="responseTitle" style="white-space: pre-line; font-size: 13px; font-weight: 300;" ><a href="../../responses/<%= templateData.response.title %>""><%= templateData.response.title %></a></h5>
+			<div style="color: #353535; white-space: pre-line;">
+				<%= templateData.response.text %>
 			</div>
 			<button type="button" style="font-size: 8px; text-decoration: none;" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
