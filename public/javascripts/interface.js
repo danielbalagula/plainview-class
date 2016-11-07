@@ -111,6 +111,7 @@ $(document).ready(function() {
 		})
 
 		renderGraph(g);
+		renderGraph(g);
 		
 		function renderGraph(){
 
@@ -125,8 +126,6 @@ $(document).ready(function() {
 
 			// Render the graph into svg g
 			d3.select("svg g").call(render, g);
-
-			autosize(svg.selectAll("textarea"));
 
 			svg.selectAll(".node").on('mousedown', function(){
 				if (mouseMovement){
@@ -172,10 +171,11 @@ $(document).ready(function() {
 		
 		function addNewNode(response, relatedResponse, responseClass){
 			console.log(response)
-			g.setNode("n"+response._id, { id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: responseClass, responseTypeColor: "green"}}), class: "unselected-node"});
+			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
-				style: "fill: none;",
+				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 				arrowhead: 'undirected',
+				//lineInterpolate: 'basis'
 			});
 			renderGraph();
 		}
