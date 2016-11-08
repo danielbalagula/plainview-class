@@ -33,21 +33,23 @@ var responseTemplate = `
 			</div>
 			<button type="button" style="font-size: 8px; text-decoration: none;" class="btn btn-link btn-sm reply-button">Reply</button>
 		</div>
-		<div class="inputTemplate" style="display:<%= templateData.displayed %>">
+		<div class="inputTemplate" id="i<%= templateData.response._id %>" style="display:<%= templateData.displayed %>">
 			<hr style="border: none; height:1px; background-color: black ">
-			<div id="newResponseTitleDiv" class="form-group row">
-				<div id="suggestedTitles">
-					Response title:
-					<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="title">
-					<button type="button" class="btn btn-outline-secondary btn-sm"  data-toggle="modal" data-target="#responseModal">Browse</button>
+			<form id="responseForm-<%= templateData.response._id %>">
+				<div id="newResponseTitleDiv" class="form-group row">
+					<div id="suggestedTitles">
+						Response title:
+						<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="title">
+						<button type="button" class="btn btn-outline-secondary btn-sm"  data-toggle="modal" data-target="#responseModal">Browse</button>
+					</div>
 				</div>
-			</div>
-			<div class="form-group row">
-				<textarea  id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.writtenReply %></textarea>
-			</div>
-			<div class="form-group row">
-				<button type="button" class="btn btn-sm submit-reply-button">Submit</button>
-			</div>
+				<div class="form-group row">
+					<textarea  id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.writtenReply %></textarea>
+				</div>
+				<div class="form-group row">
+					<button type="button" class="btn btn-sm submit-reply-button">Submit</button>
+				</div>
+			</form>
 		</div>
 	</div>
 `

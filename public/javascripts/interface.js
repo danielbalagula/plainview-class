@@ -198,7 +198,6 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, relatedResponse, responseClass){
-			console.log(response)
 			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({writtenReply: populatedResponses['r'+response._id], templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
@@ -218,7 +217,6 @@ $(document).ready(function() {
 	}
 	
 	function addResponseToDiscussion(newResponseData, isCitation){
-		console.log(newResponseData)
 		if (isCitation){
 			$.ajax({
 				type: "POST",
