@@ -85,6 +85,7 @@ $(document).ready(function() {
 		});
 
 		socket.on('newOriginalResponse', function(data){
+			console.log("second")
 			addNewNode(data.newResponse, data.relatedResponse, "originalResponse");
 		})
 		socket.on('newCitationResponse', function(data){
@@ -95,9 +96,7 @@ $(document).ready(function() {
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			if ("n"+idOfClickedResponse !== currentResponse){
-				addResponseToDiscussion(clickedResponse, true, function(){
-					addNewNode(clickedResponse, currentResponse.substring(1), "citationResponse");
-				});
+				addResponseToDiscussion(clickedResponse, currentResponse, true);
 				$('#responseModal').modal('hide');
 			} else {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
@@ -139,14 +138,13 @@ $(document).ready(function() {
 
 			$("textarea").each(function(textarea){
 				if ($(this).val() !== undefined && $(this).val() !== ""){
-						var id = $(this).attr('id').substring(1);
-						states[id].dataPersistence.writtenTitle = $("#t"+id).val();
-						states[id].dataPersistence.writtenReply = $(this).val();
-						console.log(states[id])					
+					var id = $(this).attr('id').substring(1);
+					states[id].dataPersistence.writtenTitle = $("#t"+id).val();
+					states[id].dataPersistence.writtenReply = $(this).val();
 				}
 			})
 
-			// Render the graph into svg g
+			console.log(states)
 
 			for (var responseId in states){
 				if (states.hasOwnProperty(responseId)){
@@ -191,11 +189,15 @@ $(document).ready(function() {
 				$.each($('#'+form).serializeArray(), function(i, field) {
 					newResponse[field.name] = field.value;
 				});
-				addResponseToDiscussion(newResponse, false, function(returnedResponse){
+				addResponseToDiscussion(newResponse, id, false, function(){
 					switchReplyView("n"+id);
-					addNewNode(returnedResponse, id, "originalResponse");
+					renderGraph();
 				});
 				$("#r"+id).val("")
+				states[id].dataPersistence = {
+					writtenTitle : "",
+					writtenReply : ""
+				} 
 			})
 
 			svg.selectAll('.reply-button').on('click',function(e){
@@ -223,6 +225,7 @@ $(document).ready(function() {
 				} 
 			}
 			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none",  dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 				arrowhead: 'undirected',
@@ -232,57 +235,61 @@ $(document).ready(function() {
 		}
 
 		function switchReplyView(id){
-			console.log(id)
 			if (g.node(id).label.indexOf('display:none') !== -1){
 					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
 				} else {
-					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");								
+					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");	
+					console.log('123');							
 				}
 			}
+
+		function addResponseToDiscussion(newResponseData, relatedResponse, isCitation, cb){
+			if (isCitation){
+				$.ajax({
+					type: "POST",
+					url: "../addCitationToDiscussion",
+					data: {
+						discussionId: currentDiscussionId,
+						citation: JSON.stringify(newResponseData),
+						relatedResponse: relatedResponse,
+						relationshipType: 'dissent' //replace
+					},
+					success: function(){
+						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+						if (cb){
+							cb();
+						}
+					},
+					error: function(err){
+						notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+					}
+				})
+			} else {
+				$.ajax({
+					type: "POST",
+					url: "../../responses",
+					data: {
+						discussionId: currentDiscussionId,
+						responseTitle: newResponseData['title'],
+						responseText: newResponseData['text'],
+						created_by: "Daniel",
+						relatedResponse: relatedResponse,
+						relationshipType: 'dissent' //replace
+					},
+					success: function(newResponse){
+						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+						if (cb){
+							cb();
+						}
+					},
+					error: function(err){
+						notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+					}
+				})		
+			}
+		}	
 	}
 	
-	function addResponseToDiscussion(newResponseData, isCitation, cb){
-		if (isCitation){
-			$.ajax({
-				type: "POST",
-				url: "../addCitationToDiscussion",
-				data: {
-					discussionId: currentDiscussionId,
-					citation: JSON.stringify(newResponseData),
-					relatedResponse: currentResponse.substring(1),
-					relationshipType: 'dissent' //replace
-				},
-				success: function(newResponse){
-					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
-					cb(newResponse);
-				},
-				error: function(err){
-					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
-				}
-			})
-		} else {
-			$.ajax({
-				type: "POST",
-				url: "../../responses",
-				data: {
-					discussionId: currentDiscussionId,
-					responseTitle: newResponseData['title'],
-					responseText: newResponseData['text'],
-					created_by: "Daniel",
-					relatedResponse: currentResponse.substring(1),
-					relationshipType: 'dissent' //replace
-				},
-				success: function(){
-					var fetchedResponse = 
-					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
-					cb(newResponse);
-				},
-				error: function(err){
-					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
-				}
-			})		
-		}
-	}
 	
 });
 
