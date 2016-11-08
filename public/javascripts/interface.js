@@ -236,10 +236,13 @@ $(document).ready(function() {
 		}
 
 		function switchReplyView(id){
+			console.log(id);
 			if (g.node(id).label.indexOf('display:none') !== -1){
-					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
+					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");	
+					console.log('jdlkja')			
 				} else {
 					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");	
+					console.log('switcheroo')
 				}
 			}
 
@@ -278,7 +281,9 @@ $(document).ready(function() {
 					},
 					success: function(newResponse){
 						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+						console.log(cb)
 						if (cb){
+							console.log('123123')
 							cb();
 						}
 					},

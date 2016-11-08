@@ -89,6 +89,7 @@ router.post('/addCitationToDiscussion', function(req, res, next){
                 io.to(clientId).emit('newCitationResponse', {discussionId: req.body.discussionId, citation: citation, relatedResponse: req.body.relatedResponse});
             })
         }
+        res.send('OK')
     }
   );
 })
