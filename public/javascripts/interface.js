@@ -129,16 +129,18 @@ $(document).ready(function() {
 			  return selection.transition().duration(500);
 			};
 
-			console.log('123')
-
 			$("textarea").each(function(textarea){
+				console.log($(this).attr('id'))
 				if ($(this).val() !== undefined && $(this).val() !== ""){
-					populatedResponses[$(this).attr('id').substring(1)] = $(this).val();
-					console.log(populatedResponses[$(this).attr('id').substring(1)])
+					if (populatedResponses[$(this).attr('id').substring(1)] === "CLEAR ME"){
+						$(this).val("");
+						populatedResponses[$(this).attr('id').substring(1)] = "";
+					} else {
+						populatedResponses[$(this).attr('id').substring(1)] = $(this).val();
+						console.log(populatedResponses[$(this).attr('id').substring(1)])
+					}
 				}
 			})
-
-			console.log('456')
 
 			// Render the graph into svg g
 
@@ -156,8 +158,6 @@ $(document).ready(function() {
 					}
 				}
 			}
-
-			console.log('567')
 
 			d3.select("svg g").call(render, g);
 
@@ -181,6 +181,10 @@ $(document).ready(function() {
 				var form = d3.select(this.parentNode.parentNode).attr("id");
 				var id = "n"+form.substring(form.indexOf("-")+1, form.length);
 				switchReplyView(id); //this closes the reply button without checking if the reply actually got registered by the server
+				
+				populatedResponses[id.substring(1)] = "CLEAR ME";
+				console.log(populatedResponses[id.substring(1)])				
+				renderGraph();
 				var newResponse = {};
 				$.each($('#'+form).serializeArray(), function(i, field) {
 					newResponse[field.name] = field.value;
