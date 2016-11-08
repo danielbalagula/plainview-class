@@ -19,6 +19,9 @@ var responseColors = {
 
 var argumentsToRespondTo = []; //an array of arguments the user is planning to respond to simultaneously
 
+var responses;
+var discussion;
+
 $(document).ready(function() {
 	
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
@@ -50,17 +53,19 @@ $(document).ready(function() {
 
 	function initializeGraph(id, cb){
 		d3.json('../../api/discussions/id/' + id, function(data){
-			cb(data.responses, data.discussion)
+			responses = data.responses, discussion = data.discussion;
+			cb(responses, discussion)
 		});
 	}
 	
 	function tryDraw(responses, discussion){
+		var populatedResponses = {};
 		responses.forEach(function(response){
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
+				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
-				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			}
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 				if (relationship.hasOwnProperty(response._id)){
@@ -124,7 +129,30 @@ $(document).ready(function() {
 			  return selection.transition().duration(500);
 			};
 
+			$("textarea").each(function(textarea){
+				if ($(this).val() !== undefined && $(this).val() !== ""){
+					populatedResponses[$(this).attr('id').substring(1)] = $(this).val();
+					console.log(populatedResponses[$(this).attr('id').substring(1)])
+				}
+			})
+
 			// Render the graph into svg g
+
+			for (var responseId in populatedResponses){
+				if (populatedResponses.hasOwnProperty(responseId)){
+					if (g.node("n"+responseId) !== undefined){
+						var displayed;
+						if (g.node("n"+responseId).label.indexOf('display:none') !== -1){
+							displayed = "none";
+						} else {
+							displayed = "inline-block";
+						}	
+						var response =  $.grep(responses, function(e){ return e._id == responseId; })[0];
+						g.setNode("n"+responseId, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, writtenReply: populatedResponses[responseId], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+					}
+				}
+			}
+
 			d3.select("svg g").call(render, g);
 
 			svg.selectAll(".node").on('mousedown', function(){
@@ -171,7 +199,7 @@ $(document).ready(function() {
 		
 		function addNewNode(response, relatedResponse, responseClass){
 			console.log(response)
-			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({writtenReply: populatedResponses['r'+response._id], templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 				arrowhead: 'undirected',
