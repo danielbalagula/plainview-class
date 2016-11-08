@@ -138,13 +138,12 @@ $(document).ready(function() {
 
 			$("textarea").each(function(textarea){
 				if ($(this).val() !== undefined && $(this).val() !== ""){
+					console.log($(this).val())
 					var id = $(this).attr('id').substring(1);
 					states[id].dataPersistence.writtenTitle = $("#t"+id).val();
 					states[id].dataPersistence.writtenReply = $(this).val();
 				}
 			})
-
-			console.log(states)
 
 			for (var responseId in states){
 				if (states.hasOwnProperty(responseId)){
@@ -239,7 +238,6 @@ $(document).ready(function() {
 					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
 				} else {
 					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");	
-					console.log('123');							
 				}
 			}
 
