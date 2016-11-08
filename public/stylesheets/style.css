@@ -11,6 +11,8 @@
   color: white;
 }*/
 
+.twitter-typeahead, .tt-hint, .tt-input, .tt-menu { width: 85%; }
+
 #jumbotron-link {
   text-decoration: none;
 }
@@ -211,12 +213,6 @@ font-family: 'Open Sans', sans-serif;
 .tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
 .tt-hint {
     width: 396px;
-    height: 30px;
-    padding: 8px 12px;
-    font-size: 24px;
-    line-height: 30px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
     outline: none;
 }
 
@@ -245,8 +241,6 @@ font-family: 'Open Sans', sans-serif;
 
 .tt-suggestion {
     padding: 3px 20px;
-    font-size: 18px;
-    line-height: 24px;
 }
 
 .tt-suggestion p {

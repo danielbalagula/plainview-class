@@ -69,9 +69,9 @@ $(document).ready(function() {
 			}
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
+				g.setNode("n"+response._id, { style: "stroke: #4286f4; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
-				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+				g.setNode("n"+response._id, { style: "stroke: #4286f4; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			}
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 				if (relationship.hasOwnProperty(response._id)){
@@ -85,7 +85,6 @@ $(document).ready(function() {
 		});
 
 		socket.on('newOriginalResponse', function(data){
-			console.log("second")
 			addNewNode(data.newResponse, data.relatedResponse, "originalResponse");
 		})
 		socket.on('newCitationResponse', function(data){
@@ -127,18 +126,12 @@ $(document).ready(function() {
 		
 		function renderGraph(){
 
-			g.nodes().forEach(function(v) {
-			  var node = g.node(v);
-			  node.rx = node.ry = 3;
-			});
-
 			g.graph().transition = function(selection) {
 			  return selection.transition().duration(500);
 			};
 
 			$("textarea").each(function(textarea){
 				if ($(this).val() !== undefined && $(this).val() !== ""){
-					console.log($(this).val())
 					var id = $(this).attr('id').substring(1);
 					states[id].dataPersistence.writtenTitle = $("#t"+id).val();
 					states[id].dataPersistence.writtenReply = $(this).val();
@@ -155,12 +148,18 @@ $(document).ready(function() {
 							displayed = "inline-block";
 						}	
 						var response =  $.grep(responses, function(e){ return e._id == responseId; })[0];
-						g.setNode("n"+responseId, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+						g.setNode("n"+responseId, { style: "stroke: #3563ad; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 					}
 				}
 			}
 
+			g.nodes().forEach(function(v) {
+			  var node = g.node(v);
+			  node.rx = node.ry = 3;
+			});
+
 			d3.select("svg g").call(render, g);
+
 
 			svg.selectAll(".node").on('mousedown', function(){
 				if (mouseMovement){
@@ -236,13 +235,10 @@ $(document).ready(function() {
 		}
 
 		function switchReplyView(id){
-			console.log(id);
 			if (g.node(id).label.indexOf('display:none') !== -1){
 					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");	
-					console.log('jdlkja')			
 				} else {
 					g.node(id).label = g.node(id).label.replace("display:inline-block","display:none");	
-					console.log('switcheroo')
 				}
 			}
 
@@ -275,15 +271,13 @@ $(document).ready(function() {
 						discussionId: currentDiscussionId,
 						responseTitle: newResponseData['title'],
 						responseText: newResponseData['text'],
-						created_by: "Daniel",
+						created_by: "Striped Rhino",
 						relatedResponse: relatedResponse,
 						relationshipType: 'dissent' //replace
 					},
 					success: function(newResponse){
 						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
-						console.log(cb)
 						if (cb){
-							console.log('123123')
 							cb();
 						}
 					},

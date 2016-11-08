@@ -13,7 +13,7 @@ router.post('/', function(req, res, next) {
       original_discussion: currentDiscussionId,
       title: req.body.responseTitle,
       text: req.body.responseText,
-      created_by: 'Daniel',
+      created_by: 'Striped Rhino',
     });
   newResponse.save(function(err, savedResponse){
     var relationship = {}
