@@ -87,7 +87,6 @@ router.post('/addCitationToDiscussion', function(req, res, next){
         if (discussionClients[req.body.discussionId] !== undefined){
             discussionClients[req.body.discussionId].forEach(function(clientId){
                 io.to(clientId).emit('newCitationResponse', {discussionId: req.body.discussionId, citation: citation, relatedResponse: req.body.relatedResponse});
-                res.send(citation)
             })
         }
     }

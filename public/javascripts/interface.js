@@ -231,6 +231,8 @@ $(document).ready(function() {
 				//lineInterpolate: 'basis'
 			});
 			renderGraph();
+			$('#r'+currentResponse).focus();
+
 		}
 
 		function switchReplyView(id){
