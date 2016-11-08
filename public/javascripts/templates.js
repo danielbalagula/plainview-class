@@ -39,12 +39,12 @@ var responseTemplate = `
 				<div id="newResponseTitleDiv" class="form-group row">
 					<div id="suggestedTitles">
 						Response title:
-						<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" data-content="Describe a specific position that you will defend." id="newResponseTitle" name="title">
+						<input class="typeahead form-control" style="width: 50%; display:inline-block;" type="text" data-toggle="popover" data-trigger="focus" value="<%= templateData.dataPersistence.writtenTitle %>" data-content="Describe a specific position that you will defend." id="t<%= templateData.response._id %>" name="title">
 						<button type="button" class="btn btn-outline-secondary btn-sm"  data-toggle="modal" data-target="#responseModal">Browse</button>
 					</div>
 				</div>
 				<div class="form-group row">
-					<textarea  id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.writtenReply %></textarea>
+					<textarea  id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.dataPersistence.writtenReply %></textarea>
 				</div>
 				<div class="form-group row">
 					<button type="button" class="btn btn-sm submit-reply-button">Submit</button>

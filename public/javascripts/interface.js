@@ -59,13 +59,19 @@ $(document).ready(function() {
 	}
 	
 	function tryDraw(responses, discussion){
-		var populatedResponses = {};
+		var states = {};
 		responses.forEach(function(response){
+			states[response._id] = {
+				dataPersistence : {
+					writtenTitle : "",
+					writtenReply : ""
+				} 
+			}
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
+				g.setNode("n"+response._id, { style: "border: none", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
-				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			}
 			discussion.relationships.slice(1,discussion.relationships.length).forEach(function(relationship){
 				if (relationship.hasOwnProperty(response._id)){
@@ -89,7 +95,9 @@ $(document).ready(function() {
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			if ("n"+idOfClickedResponse !== currentResponse){
-				addResponseToDiscussion(clickedResponse, true, addNewNode);
+				addResponseToDiscussion(clickedResponse, true, function(){
+					addNewNode(clickedResponse, currentResponse.substring(1), "citationResponse");
+				});
 				$('#responseModal').modal('hide');
 			} else {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
@@ -130,22 +138,18 @@ $(document).ready(function() {
 			};
 
 			$("textarea").each(function(textarea){
-				console.log($(this).attr('id'))
 				if ($(this).val() !== undefined && $(this).val() !== ""){
-					if (populatedResponses[$(this).attr('id').substring(1)] === "CLEAR ME"){
-						$(this).val("");
-						populatedResponses[$(this).attr('id').substring(1)] = "";
-					} else {
-						populatedResponses[$(this).attr('id').substring(1)] = $(this).val();
-						console.log(populatedResponses[$(this).attr('id').substring(1)])
-					}
+						var id = $(this).attr('id').substring(1);
+						states[id].dataPersistence.writtenTitle = $("#t"+id).val();
+						states[id].dataPersistence.writtenReply = $(this).val();
+						console.log(states[id])					
 				}
 			})
 
 			// Render the graph into svg g
 
-			for (var responseId in populatedResponses){
-				if (populatedResponses.hasOwnProperty(responseId)){
+			for (var responseId in states){
+				if (states.hasOwnProperty(responseId)){
 					if (g.node("n"+responseId) !== undefined){
 						var displayed;
 						if (g.node("n"+responseId).label.indexOf('display:none') !== -1){
@@ -154,7 +158,7 @@ $(document).ready(function() {
 							displayed = "inline-block";
 						}	
 						var response =  $.grep(responses, function(e){ return e._id == responseId; })[0];
-						g.setNode("n"+responseId, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, writtenReply: populatedResponses[responseId], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+						g.setNode("n"+responseId, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 					}
 				}
 			}
@@ -179,17 +183,19 @@ $(document).ready(function() {
 
 			svg.selectAll('.submit-reply-button').on('click',function(e){
 				var form = d3.select(this.parentNode.parentNode).attr("id");
-				var id = "n"+form.substring(form.indexOf("-")+1, form.length);
-				switchReplyView(id); //this closes the reply button without checking if the reply actually got registered by the server
+				var id = form.substring(form.indexOf("-")+1, form.length);
 				
-				populatedResponses[id.substring(1)] = "CLEAR ME";
-				console.log(populatedResponses[id.substring(1)])				
-				renderGraph();
+				var response = $.grep(responses, function(e){ return e._id == id; })[0];
+
 				var newResponse = {};
 				$.each($('#'+form).serializeArray(), function(i, field) {
 					newResponse[field.name] = field.value;
 				});
-				addResponseToDiscussion(newResponse, false, addNewNode);
+				addResponseToDiscussion(newResponse, false, function(returnedResponse){
+					switchReplyView("n"+id);
+					addNewNode(returnedResponse, id, "originalResponse");
+				});
+				$("#r"+id).val("")
 			})
 
 			svg.selectAll('.reply-button').on('click',function(e){
@@ -208,9 +214,15 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, relatedResponse, responseClass){
-			populatedResponses[response._id] = "";
+			states[response._id] = "";
 			responses.push(response);
-			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			states[response._id] = {
+				dataPersistence : {
+					writtenTitle : "",
+					writtenReply : ""
+				} 
+			}
+			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none",  dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 				arrowhead: 'undirected',
@@ -220,6 +232,7 @@ $(document).ready(function() {
 		}
 
 		function switchReplyView(id){
+			console.log(id)
 			if (g.node(id).label.indexOf('display:none') !== -1){
 					g.node(id).label = g.node(id).label.replace("display:none","display:inline-block");				
 				} else {
@@ -228,7 +241,7 @@ $(document).ready(function() {
 			}
 	}
 	
-	function addResponseToDiscussion(newResponseData, isCitation){
+	function addResponseToDiscussion(newResponseData, isCitation, cb){
 		if (isCitation){
 			$.ajax({
 				type: "POST",
@@ -239,8 +252,9 @@ $(document).ready(function() {
 					relatedResponse: currentResponse.substring(1),
 					relationshipType: 'dissent' //replace
 				},
-				success: function(){
+				success: function(newResponse){
 					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+					cb(newResponse);
 				},
 				error: function(err){
 					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
@@ -258,8 +272,10 @@ $(document).ready(function() {
 					relatedResponse: currentResponse.substring(1),
 					relationshipType: 'dissent' //replace
 				},
-				success: function(newResponse){
+				success: function(){
+					var fetchedResponse = 
 					notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+					cb(newResponse);
 				},
 				error: function(err){
 					notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
