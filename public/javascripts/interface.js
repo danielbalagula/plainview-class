@@ -129,12 +129,16 @@ $(document).ready(function() {
 			  return selection.transition().duration(500);
 			};
 
+			console.log('123')
+
 			$("textarea").each(function(textarea){
 				if ($(this).val() !== undefined && $(this).val() !== ""){
 					populatedResponses[$(this).attr('id').substring(1)] = $(this).val();
 					console.log(populatedResponses[$(this).attr('id').substring(1)])
 				}
 			})
+
+			console.log('456')
 
 			// Render the graph into svg g
 
@@ -152,6 +156,8 @@ $(document).ready(function() {
 					}
 				}
 			}
+
+			console.log('567')
 
 			d3.select("svg g").call(render, g);
 
@@ -198,7 +204,9 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, relatedResponse, responseClass){
-			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({displayed: "none", writtenReply: populatedResponses['r'+response._id], templateData : {response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			populatedResponses[response._id] = "";
+			responses.push(response);
+			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", writtenReply: populatedResponses[response._id], response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
 				arrowhead: 'undirected',
