@@ -104,11 +104,19 @@ p {
 }
 .navbar-default .nav > li.active > a:hover,
 .navbar-default .nav > li.active > a:focus:hover {
-  background-color: #bababa;
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(left, #ffffff 29%, #d3d3d3 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(left, #ffffff 29%,#d3d3d3 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to right, #ffffff 29%,#d3d3d3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d3d3d3',GradientType=1 );
 }
 @media (min-width: 768px) {
   .navbar-default {
-    background-color: #bababa;
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(left, #ffffff 29%, #d3d3d3 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(left, #ffffff 29%,#d3d3d3 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to right, #ffffff 29%,#d3d3d3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d3d3d3',GradientType=1 );
     border-color: transparent;
   }
   .navbar-default .navbar-header .navbar-brand {
@@ -151,10 +159,10 @@ p {
 
 #background { 
     position: fixed;
-    top: 20%;
-    left: 40%;
-    min-width: 60%;
-    min-height: 60%;
+    top: 10%;
+    left: 25%;
+    min-width: 50%;
+    min-height: 50%;
     width: 80%;
     height: 80%;
     z-index: -100;
@@ -425,12 +433,16 @@ footer ul li a.active {
   color: white;
   border-color: white;
   border: 1px solid;
+  color: white;
+  background-color: #dbb300;
+  border-color: #dbb300;
+
 }
 .btn-outline:hover,
 .btn-outline:focus,
 .btn-outline:active,
 .btn-outline.active {
-  color: white;
+  color: black;
   background-color: #dbb300;
   border-color: #dbb300;
 }
