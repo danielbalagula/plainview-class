@@ -160,11 +160,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 #background { 
     position: fixed;
     top: 10%;
-    left: 25%;
+    left: 30%;
     min-width: 50%;
     min-height: 50%;
-    width: 80%;
-    height: 80%;
+    width: 70%;
+    height: 70%;
     z-index: -100;
     background-size: cover; 
 }
