@@ -118,7 +118,7 @@ $(document).ready(function() {
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
 			$('#responseModal').modal('hide');
-			$('#newResponseTitle').val(clickedResponseTitle);
+			$('#t' + currentResponse.substring(1)).val(clickedResponseTitle);
 		})
 
 		renderGraph(g);
@@ -130,11 +130,13 @@ $(document).ready(function() {
 			  return selection.transition().duration(500);
 			};
 
-			$("textarea").each(function(textarea){
-				if ($(this).val() !== undefined && $(this).val() !== ""){
-					var id = $(this).attr('id').substring(1);
+			g.nodes().forEach(function(nodeId){
+				var id = nodeId.substring(1);
+				if ($("#t"+id).val() !== undefined && $("#t"+id).val() !== ""){
 					states[id].dataPersistence.writtenTitle = $("#t"+id).val();
-					states[id].dataPersistence.writtenReply = $(this).val();
+				}
+				if ($("#r"+id).val() !== undefined && $("#r"+id).val() !== ""){
+					states[id].dataPersistence.writtenReply = $("#r"+id).val();
 				}
 			})
 
@@ -155,7 +157,6 @@ $(document).ready(function() {
 
 			g.nodes().forEach(function(v) {
 			  var node = g.node(v);
-			  console.log(v)
 			  node.rx = node.ry = 3;
 			});
 

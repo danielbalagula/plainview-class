@@ -61,11 +61,23 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
+  // app.use(function(err, req, res, next) {
+  //   res.status(err.status || 500);
+  //   res.render('error', {
+  //     message: err.message,
+  //     error: err
+  //   });
+  // });
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    var status404;
+    console.log(err.status)
+    if (err.status == 404){
+      status404 = true;
+    }
     res.render('error', {
       message: err.message,
-      error: err
+      status404: status404
     });
   });
 }
@@ -74,9 +86,15 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
+  var status404;
+  console.log(err.status)
+  if (err.status == 404){
+    console.log('hi')
+    status404 = true;
+  }
   res.render('error', {
     message: err.message,
-    error: {}
+    status404: status404
   });
 });
 

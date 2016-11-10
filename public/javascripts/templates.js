@@ -44,7 +44,7 @@ var responseTemplate = `
 					</div>
 				</div>
 				<div class="form-group row">
-					<textarea  id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.dataPersistence.writtenReply %></textarea>
+					<textarea id="r<%= templateData.response._id %>" name="text" rows="10" style="width:90%; border:solid .01px gray; resize: none;"><%= templateData.dataPersistence.writtenReply %></textarea>
 				</div>
 				<div class="form-group row">
 					<button type="button" class="btn btn-sm submit-reply-button">Submit</button>

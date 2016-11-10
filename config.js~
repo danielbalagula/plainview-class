@@ -1,0 +1,3 @@
+module.exports = {
+	'database': 'mongodb://serverclient:noway123@ds149577.mlab.com:49577/testing',
+}

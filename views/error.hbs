@@ -1,3 +1,13 @@
-<h1>{{message}}</h1>
-<h2>{{error.status}}</h2>
-<pre>{{error.stack}}</pre>
+{{#if error}}
+	<h1>{{message}}</h1>
+    <h2>{{error.status}}</h2>
+	<pre>{{error.stack}}</pre>
+{{else}}
+	<center><h1 style="font-weight:bold">Oh no! 404</h1></center>
+	{{#if status404}}
+		<center>It looks like this page hasn't been found... <b>:(</b></center>
+		<center>Forgive us? We're still in pre-alpha</center>
+		<a href="/"><center>Here is a link back to home</center></a>
+		<center><img src="/img/404.gif" width="480" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></img></center>
+	{{/if}}
+{{/if}}

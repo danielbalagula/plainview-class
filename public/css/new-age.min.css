@@ -298,10 +298,6 @@ section.features .feature-item h3 {
 }
 section.features .feature-item i {
   font-size: 80px;
-  background: #2d2d2d;
-  background: #2d2d2d;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 @media (min-width: 992px) {
   section.features .device-container,
