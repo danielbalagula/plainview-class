@@ -95,7 +95,7 @@ $(document).ready(function() {
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			if ("n"+idOfClickedResponse !== currentResponse){
-				addResponseToDiscussion(clickedResponse, currentResponse, true);
+				addResponseToDiscussion(clickedResponse, currentResponse.substring(1), true);
 				$('#responseModal').modal('hide');
 			} else {
 				if($('.alert', '#'+idOfClickedResponse).length !== 1) {
@@ -155,6 +155,7 @@ $(document).ready(function() {
 
 			g.nodes().forEach(function(v) {
 			  var node = g.node(v);
+			  console.log(v)
 			  node.rx = node.ry = 3;
 			});
 
@@ -214,6 +215,7 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, relatedResponse, responseClass){
+			console.log(response, relatedResponse)
 			states[response._id] = "";
 			responses.push(response);
 			states[response._id] = {
