@@ -148,21 +148,27 @@ background: #FDFCFE;
 }
 
 #background { 
-    position: fixed;
     top: 0%;
-    margin-left: 0%;
     min-width: 45%;
     min-height: 45%;
-    width: 150%;
-    height: 150%;
+    width: 200%;
+    max-width: auto;
+    max-height: auto;
+    height: 200%;
     z-index: -100;
 }
 
+video {
+  width: 100%; display: block;
+}
+
 header {
+  margin-top: 5%;
   position: relative;
   width: 100%;
   min-height: auto;
   overflow-y: hidden;
+  overflow-x: hidden;
 /*  background: linear-gradient( rgba(0, 0, 0, 0.66), rgba(0, 0, 0, 0.66) ), url('../img/intro.webm');
 */  /* fallback for old browsers */
   /* Chrome 10-25, Safari 5.1-6 */
