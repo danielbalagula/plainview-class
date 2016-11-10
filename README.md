@@ -15,6 +15,7 @@ Operated by: Jordan Coimbra, Daniel Balagula
 - ~~responses' original uses are not recorded (they should be)~~ Fixed 10/24/2016
 
 ##To Do:
+- Remove all login/lisence keys from view in repository
 - Why do I have to render twice to get rid of formatting inconsistensies?
 - Figure out how to mark when someone left a debateExerience server-side. Or just clear when they disconnect? What is the best way?
 - POSTs need time in-between attempts so that server doesn't get ddosed/overloaded
