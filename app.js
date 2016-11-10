@@ -1,4 +1,3 @@
-var nr = require('newrelic');
 var config = require('./config');
 
 var express = require('express');
