@@ -194,6 +194,7 @@ $(document).ready(function() {
 					renderGraph();
 				});
 				$("#r"+id).val("")
+				$("#t"+id).val("")
 				states[id].dataPersistence = {
 					writtenTitle : "",
 					writtenReply : ""
