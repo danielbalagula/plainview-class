@@ -335,6 +335,12 @@ section.cta {
   }
 }
 
+@media screen and (max-width: 800px) {
+  .main-content {
+    text-align: center;
+  }
+}
+
 section.cta .cta-content {
   position: relative;
   z-index: 1;
@@ -447,9 +453,9 @@ footer ul li a.active {
 .btn-outline:focus,
 .btn-outline:active,
 .btn-outline.active {
-  color: black;
-  background-color: #dbb300;
-  border-color: #dbb300;
+  color: white;
+  background-color: #bf9c00;
+  border-color: #bf9c00;
 }
 .btn {
   font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
