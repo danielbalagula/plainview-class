@@ -176,9 +176,15 @@ header {
   	background-attachment: relative;
   	background-repeat: no-repeat;
 	background-position: center center;
+  background-color: #FDFCFE;
 	background-size: 100%;
   color: black;
 }
+
+body {
+  background-color:#FDFCFE;
+}
+
 header .header-content {
   text-align: center;
   padding: 150px 0 50px;
@@ -321,6 +327,14 @@ section.cta {
   background-image: url('../img/bg-cta.jpg');
   padding: 250px 0;
 }
+
+@media screen and (max-width: 1080px) {
+  section.cta {
+    background-color: #4286f4;
+    background-image: none;
+  }
+}
+
 section.cta .cta-content {
   position: relative;
   z-index: 1;
