@@ -5,13 +5,12 @@ var responseBrowserTemplate = `
         <span class="pull-left"> <font size=3 color='grey'><i><a href="/responses/<%= response.title %>"><%= response.title %></a></i></font></span>
         </br>
         <div class="responseSampleThumbnail">
-        	<div class="row">
-        		<%= response.text %>
-        	</div>
-        	<div class="btn-toolbar btn-toolbar-sm pull-right">
-        		<button class="btn btn-sm btn-primary use-title">Use Title</button>
-        		<button class="btn btn-sm cite-response")">Cite Response</button>
-        	</div>
+			<%= response.text %>
+			</br>
+			<div class="btn-toolbar btn-toolbar-sm pull-right">
+	    		<button class="btn btn-sm btn-primary use-title">Use Title</button>
+	    		<button class="btn btn-sm cite-response">Cite Response</button>
+	    	</div>
         </div>
       </div>
      </div>
