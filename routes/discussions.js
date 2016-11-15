@@ -55,16 +55,16 @@ router.get('/samplediscussion', function(req, res, next){
   });
   var relationship1 = {};
   var relationship2 = {};
-  console.log('123')
-  relationship1[sampleResponse2._id] = {relatedResponse: sampleResponse1._id, relationshipType: 'dissent'};
-  relationship1[sampleResponse3._id] = {relatedResponse: sampleResponse1._id, relationshipType: 'dissent'};
+  var relationship3 = {};
+  relationship1[sampleResponse1._id] = {relatedResponse: "", relationshipType: 'root'};
+  relationship2[sampleResponse2._id] = {relatedResponse: sampleResponse1._id, relationshipType: 'dissent'};
+  relationship3[sampleResponse3._id] = {relatedResponse: sampleResponse1._id, relationshipType: 'dissent'};
   var sampleDiscussion = new Discussion({
     responses: [sampleResponse1._id, sampleResponse2._id, sampleResponse3._id],
     citations: [],
-    relationships: [relationship1, relationship2]
+    relationships: [relationship1, relationship2, relationship3]
   });
-  console.log('345')
-  res.json({discussion: samplediscussion, responses: [sampleResponse1, sampleResponse2, sampleResponse3]});
+  res.json({discussion: sampleDiscussion, responses: [sampleResponse1, sampleResponse2, sampleResponse3]});
 })
 
 router.post('/', function(req, res, next) {

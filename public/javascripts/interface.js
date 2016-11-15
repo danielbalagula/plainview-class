@@ -74,6 +74,7 @@ $(document).ready(function() {
 					writtenReply : ""
 				} 
 			}
+			console.log(discussion.relationships)
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
 				g.setNode("n"+response._id, { style: "stroke: #4286f4; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
