@@ -2,6 +2,11 @@ $(document).ready(function(){
 
 	var startedSlideShow = false;
 
+	var x = document.getElementsByClassName("convoslides");
+    for (i = 1; i < x.length; i++) {
+      x[i].style.display = "none"; 
+    }
+
 	$(document).on('scroll', function() {
 	    if($(this).scrollTop()>=$('#features').position().top){
 	        if (startedSlideShow === false){
