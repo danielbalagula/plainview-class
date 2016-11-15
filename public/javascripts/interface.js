@@ -52,10 +52,17 @@ $(document).ready(function() {
 	});
 
 	function initializeGraph(id, cb){
-		d3.json('../../api/discussions/id/' + id, function(data){
-			responses = data.responses, discussion = data.discussion;
-			cb(responses, discussion)
-		});
+		if (id !== "samplediscussion"){
+			d3.json('../../api/discussions/id/' + id, function(data){
+				responses = data.responses, discussion = data.discussion;
+				cb(responses, discussion)
+			});
+		} else {
+			d3.json('../discussions/samplediscussion', function(data){
+				responses = data.responses, discussion = data.discussion;
+				cb(responses, discussion)
+			});
+		}
 	}
 	
 	function tryDraw(responses, discussion){

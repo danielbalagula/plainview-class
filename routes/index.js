@@ -13,4 +13,8 @@ router.get('/', function(req, res, next) {
   })
 });
 
+router.get('/demo', function(req, res, next){
+	res.render('discussion', {discussionId: 'samplediscussion'})
+})
+
 module.exports = router;
