@@ -8,7 +8,7 @@ $(document).ready(function(){
     }
 
 	$(document).on('scroll', function() {
-	    if($(this).scrollTop()>=$('#features').position().top){
+	    if($(this).scrollTop()>=$('#features').position().top-300){
 	        if (startedSlideShow === false){
 	        	var slideIndex = 0;
 				carousel();
