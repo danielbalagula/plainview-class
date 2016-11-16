@@ -40,7 +40,11 @@ $(document).ready(function() {
 		zoom = d3.behavior.zoom().on("zoom", function() {
 			inner.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 		});
+	zoom.scale(zoom.scale()*1.5)
 	svg.call(zoom).on("dblclick.zoom", null);
+	svg.call(zoom).call(zoom.event);
+	
+	//zoom.scaleExtent([1, 2]) max/min zooms
 
 	fetchResponses();
 	initializeGraph(currentDiscussionId, tryDraw);
