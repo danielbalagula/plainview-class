@@ -23,7 +23,21 @@ var Response = require('./models/response');
 
 discussionClients = {};
 
-mongoose.connect(config.database);
+var dbconf;
+
+if (process.env.NODE_ENV == 'PRODUCTION') {
+ var fs = require('fs');
+ var fn = path.join(__dirname, 'config.json');
+ var data = fs.readFileSync(fn);
+
+ var conf = JSON.parse(data);
+ var dbconf = conf.dbconf;
+} else {
+
+ dbconf = 'mongodb://localhost/db2791';
+}
+
+mongoose.connect(dbconf);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
