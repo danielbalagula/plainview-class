@@ -1,23 +1,24 @@
-<div class="bg"></div>
-<div class="jumbotron">
-	<div class="container">
-		<h2 class="display-3" id="welcome">Welcome to Plainview!</h2>
-		<form action="/search" method="GET">
-			<input class="typeahead form-control" type="text" placeholder="Search discussions, responses, and tags" id="front-search" name="response_query">
-			<hr class="my-2" style="clear: both; visibility: hidden;">
-			<p class="lead">
-				<a href="/about" id="jumbotron-link">Learn more</a>
-			</p>
-			<input type="submit" class="hidden_submit">
-		</form>
-	</div>
-</div>
 <div class="container">
-	<div class="row">
-		<h3>Newest Responses</h3>
-	</div>
-	<div class="row">
-		<div class="col-md-9">
+	<ol class="breadcrumb">
+	  <li><a href="/">Search</a></li>
+	  <li><a href="/search?response_query={{response_query}}">{{response_query}}</a></li>
+	</ol>
+	<h2>{{title}}</h2>
+
+	{{#if discussions}}
+		<h2>Discussions with tag "{{this.response_query}}"</h2>
+		<div class="list-group">
+		{{#each discussions}}
+			<p class="list-group-item-heading"><a href="/discussions/id/{{this._id}}" class="list-group-item list-group-item-action"><b>{{this.title}}</b> - {{this.created_by}} - {{this.responses.length}} messages</a></p>
+		{{/each}}
+		</div>
+	{{/if}}
+
+	{{#if responses}}
+		{{#if this.response_query}}
+			<h2>Responses containing the keyword "{{this.response_query}}"</h2>
+		{{/if}}
+		<div class="row">
 			{{#each responses}}
 				<div class="col-sm-6 col-md-4">
 					<div class="thumbnail responseTile">
@@ -50,15 +51,5 @@
 				</div>
 			{{/each}}
 		</div>
-		<div class="col-md-3">
-			Top tags
-			<div class="list-group">
-				{{#each tags}}
-					{{#if this.label}}
-						<h5 class="list-group-item-heading"><a href="/search?response_query={{this.label}}" class="list-group-item list-group-item-action">{{this.label}} - {{this.discussions_using}} discussions</a></h5>
-					{{/if}}
-				{{/each}}
-			</div>
-		</div>
-	</div>
+	{{/if}}
 </div>

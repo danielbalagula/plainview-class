@@ -1,13 +1,39 @@
 var express = require('express');
 var router = express.Router();
+var Account = require('../models/account');
+var Response = require('../models/response');
+var Discussion = require('../models/discussion');
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.render('users', {});
+
 });
 
+router.get('/demouser', function(req,res,next){
+	res.redirect('/responses');
+})
+
 router.get('/:user_id', function(req, res, next) {
-  res.render('profile', {});
+	req.params.user_id = req.params.user_id.toLowerCase();
+	Account.findOne({slug: req.params.user_id}, function(err, foundAccount){
+		console.log(foundAccount)
+		if (foundAccount){
+			Response.find({
+				'_id': { $in: foundAccount.responses}
+			}, function (err, foundResponses) {
+				Discussion.find({
+					'_id': { $in: foundAccount.discussions}
+				}, function (err, foundDiscussions) {
+					if (req.isAuthenticated() && ''+req.user._id == ''+foundAccount._id) {
+						res.render('profile', {user: req.user, discussions: foundDiscussions, responses: foundResponses});
+					} else {
+						res.render('users', {user: foundAccount, discussions: foundDiscussions, responses: foundResponses});
+					}
+				});
+			});
+		} else {
+			next();
+		}
+	});
 });
 
 router.post('/', function(req, res, next) {

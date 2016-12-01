@@ -23,7 +23,11 @@ var responses;
 var discussion;
 
 $(document).ready(function() {
-	
+
+	var lastFocus;
+
+	document.addEventListener('focus',function(e){lastFocus = e.target.id}, true);
+
 	var currentDiscussionId = $( ".discussionId" ).attr('id');
 
 	var socket = io();
@@ -41,6 +45,7 @@ $(document).ready(function() {
 			inner.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 		});
 	zoom.scale(zoom.scale()*1.5)
+	svg.call(zoom).on("dblclick.zoom", null);
 	svg.call(zoom).on("dblclick.zoom", null);
 	svg.call(zoom).call(zoom.event);
 	
@@ -78,10 +83,9 @@ $(document).ready(function() {
 					writtenReply : ""
 				} 
 			}
-			console.log(discussion.relationships)
 			var relationshipType = discussion.relationships.filter(function(relationship){  return relationship[response._id] !== undefined })[0][response._id].relationshipType;
 			if (discussion.citations.indexOf(response._id) !== -1){
-				g.setNode("n"+response._id, { style: "stroke: #4286f4; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
+				g.setNode("n"+response._id, { style: "stroke: #f44141; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "citationResponse", responseTypeColor: 'black'}}), class: "unselected-node "});
 			} else {
 				g.setNode("n"+response._id, { style: "stroke: #4286f4; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none", dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
 			}
@@ -104,7 +108,7 @@ $(document).ready(function() {
 		})
 				
 		$('#responses').on('click', '.cite-response', function(e){
-			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
+			var idOfClickedResponse = $(e.target).closest('a').attr('id');
 			var clickedResponse = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0];
 			if ("n"+idOfClickedResponse !== currentResponse){
 				addResponseToDiscussion(clickedResponse, currentResponse.substring(1), true);
@@ -126,7 +130,7 @@ $(document).ready(function() {
 			fetchResponses(searchQuery);
 		});
 		
-		$('#responses').on('click', '.use-title',function(e){
+		$('#responses').on('click', '.use-title',function(e){return;
 			var idOfClickedResponse = $(e.target).closest('.thumbnail').attr('id');
 			var clickedResponseTitle = $.grep(fetchedResponses, function(e){ return e._id == idOfClickedResponse; })[0]['title'];
 			$('#responseModal').modal('hide');
@@ -139,10 +143,10 @@ $(document).ready(function() {
 		function renderGraph(){
 
 			g.graph().transition = function(selection) {
-			  return selection.transition().duration(500);
+				return selection.transition().duration(500);
 			};
 
-			g.nodes().forEach(function(nodeId){
+			g.nodes().forEach(function saveState(nodeId){
 				var id = nodeId.substring(1);
 				if ($("#t"+id).val() !== undefined && $("#t"+id).val() !== ""){
 					states[id].dataPersistence.writtenTitle = $("#t"+id).val();
@@ -162,7 +166,11 @@ $(document).ready(function() {
 							displayed = "inline-block";
 						}	
 						var response =  $.grep(responses, function(e){ return e._id == responseId; })[0];
-						g.setNode("n"+responseId, { style: "stroke: #3563ad; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+						if (discussion.citations.indexOf(response._id) !== -1){
+							g.setNode("n"+responseId, { style: "stroke: #9d41f4; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {citationMessage: "Citation: ", displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+						} else {
+							g.setNode("n"+responseId, { style: "stroke: #3563ad; stroke-width: 0.5px", id: "n"+responseId, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: displayed, dataPersistence: states[responseId].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});			
+						}
 					}
 				}
 			}
@@ -174,6 +182,21 @@ $(document).ready(function() {
 
 			d3.select("svg g").call(render, g);
 
+			if (lastFocus){
+				var temp = $('#'+lastFocus).val();
+				$('#'+lastFocus).val('').val(temp).focus();
+			}
+
+			// if (document.getElementById("#"+lastFocus)){
+			// 	console.log("it exists")
+			// 	document.getElementById("#"+lastFocus).focus(function(){
+			// 		console.log("dasdsa")
+			// 	});
+			// } else {
+			// 	console.log(lastFocus);
+			// 	console.log(document.getElementById("#"+lastFocus))
+			// 	console.log("it doesnt exist")
+			// }
 
 			svg.selectAll(".node").on('mousedown', function(){
 				if (mouseMovement){
@@ -197,20 +220,28 @@ $(document).ready(function() {
 				
 				var response = $.grep(responses, function(e){ return e._id == id; })[0];
 
-				var newResponse = {};
-				$.each($('#'+form).serializeArray(), function(i, field) {
-					newResponse[field.name] = field.value;
-				});
-				addResponseToDiscussion(newResponse, id, false, function(){
-					switchReplyView("n"+id);
-					renderGraph();
-				});
-				$("#r"+id).val("")
-				$("#t"+id).val("")
-				states[id].dataPersistence = {
-					writtenTitle : "",
-					writtenReply : ""
-				} 
+				if ($("#t"+id).val().length < 5){
+					notify("warning", "Titles should be at least 5 characters", "glyphicon glyphicon-alert");
+				} else if ($("#r"+id).val().length < 30){
+					notify("warning", "Replies should be at least 30 characters", "glyphicon glyphicon-alert");
+				} else {
+					var newResponse = {};
+					$.each($('#'+form).serializeArray(), function(i, field) {
+						newResponse[field.name] = field.value;
+					});
+					addResponseToDiscussion(newResponse, id, false, function(success){
+						if (success){
+							switchReplyView("n"+id);
+							renderGraph();
+							$("#r"+id).val("")
+							$("#t"+id).val("")
+							states[id].dataPersistence = {
+								writtenTitle : "",
+								writtenReply : ""
+							}
+						}
+					}); 
+				}
 			})
 
 			svg.selectAll('.reply-button').on('click',function(e){
@@ -229,7 +260,6 @@ $(document).ready(function() {
 		}
 		
 		function addNewNode(response, relatedResponse, responseClass){
-			console.log(response, relatedResponse)
 			states[response._id] = "";
 			responses.push(response);
 			states[response._id] = {
@@ -238,7 +268,11 @@ $(document).ready(function() {
 					writtenReply : ""
 				} 
 			}
-			g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none",  dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			if (responseClass === "originalResponse"){
+				g.setNode("n"+response._id, { style: "stroke: #8a95a8; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none",  dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			} else {
+				g.setNode("n"+response._id, { style: "stroke: #f44141; stroke-width: 0.5px", id: "n"+response._id, labelType: 'html', label: compiledResponseTemplate({templateData : {displayed: "none",  dataPersistence: states[response._id].dataPersistence, response: response, class: "originalResponse", responseTypeColor: 'black'}}), class: "unselected-node"});
+			}
 			
 			g.setEdge("n"+relatedResponse, "n"+response._id, {
 				style: "fill: none;stroke: #0084ff; stroke-width: 0.5px;",
@@ -259,6 +293,17 @@ $(document).ready(function() {
 			}
 
 		function addResponseToDiscussion(newResponseData, relatedResponse, isCitation, cb){
+			var demo = false;
+			if (discussion.created_by == "demo"){
+				demo  = true;
+			}
+			if (demo === false && Math.floor((Date.now() - localStorage.getItem("last_post"))/1000) <= 30 && localStorage.getItem("last_post") !== null) {
+				notify("warning", "Please wait 30 seconds after your last post", "glyphicon glyphicon-alert");
+				if (cb){
+					cb(false);
+				}
+				return;
+			}
 			if (isCitation){
 				$.ajax({
 					type: "POST",
@@ -267,16 +312,27 @@ $(document).ready(function() {
 						discussionId: currentDiscussionId,
 						citation: JSON.stringify(newResponseData),
 						relatedResponse: relatedResponse,
+						demo: demo,
 						relationshipType: 'dissent' //replace
 					},
 					success: function(){
 						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+						localStorage.setItem("last_post", Date.now());
 						if (cb){
-							cb();
+							cb(true);
 						}
 					},
 					error: function(err){
-						notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+						if (err.status === 400){
+							notify("warning", "You must be signed in to reply to this conversation", "glyphicon glyphicon-alert");							
+						} else if (err.status === 429) {
+							notify("warning", "Please wait 30 seconds after your last post", "glyphicon glyphicon-alert");
+						} else {
+							notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+						}
+						if (cb){
+							cb(false);
+						}
 					}
 				})
 			} else {
@@ -288,17 +344,28 @@ $(document).ready(function() {
 						responseTitle: newResponseData['title'],
 						responseText: newResponseData['text'],
 						created_by: "Striped Rhino",
+						demo: demo,
 						relatedResponse: relatedResponse,
 						relationshipType: 'dissent' //replace
 					},
 					success: function(newResponse){
 						notify("success", "Replied to conversation", "glyphicon glyphicon-ok-circle");
+						localStorage.setItem("last_post", Date.now());
 						if (cb){
-							cb();
+							cb(true);
 						}
 					},
 					error: function(err){
-						notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+						if (err.status === 400){
+							notify("warning", "You must be signed in to reply to this conversation", "glyphicon glyphicon-alert");							
+						} else if (err.status === 429) {
+							notify("warning", "Please wait 30 seconds after your last post", "glyphicon glyphicon-alert");
+						} else {
+							notify("warning", "Reply didn't go through. Please try again later", "glyphicon glyphicon-alert");
+						}
+						if (cb){
+							cb(false);
+						}
 					}
 				})		
 			}
@@ -336,7 +403,7 @@ function fetchResponses(searchQuery){
 		url: "../../api/responses",
 		data: searchQuery,
 		success: function(data){
-			fetchedResponses = data;
+			fetchedResponses = data.responses;
 			loadResponseBrowser();
 		}
 	})
